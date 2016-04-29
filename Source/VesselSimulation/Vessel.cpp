@@ -49,15 +49,8 @@ void AVessel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// ANGULAR
+// ANGULAR
 	// Angular Acceleration
-
-
-	/*SetActorLocation
-	SetActorRelativeLocation
-	SetActorRotation
-	SetActorRelativeRotation*/
-
 	const float MAX_RUDDER_ANGLE = 35.0f; // Standard limit
 	if (rudder_input_dir != 0) {
 		rudderAngle.setRequested(FMath::Max(FMath::Min(rudderAngle.getRequested() + rudder_input_dir * 20.0f * DeltaTime, MAX_RUDDER_ANGLE), -MAX_RUDDER_ANGLE));
@@ -67,7 +60,7 @@ void AVessel::Tick(float DeltaTime)
 
 // ANGULAR
 	// Angular Acceleration
-	m_ang_accel.X = + m_ang_vel.Z * m_vel.X * 0.001f // Yaw affects roll
+	m_ang_accel.X = - m_ang_vel.Z * m_vel.X * 0.001f // Yaw affects roll
 					- FMath::Sign(m_rot.X)* m_rot.X * m_rot.X * 0.2f; // Ship wants it's roll to be 0, drag
 	m_ang_accel.Y = + m_vel.X * 0.01f // Surge affects pitch, lifts the front
 					- FMath::Sign(m_rot.Y)* m_rot.Y * m_rot.Y * 1.0f; // Ship wants it's pitch to be 0, drag
@@ -97,39 +90,16 @@ void AVessel::Tick(float DeltaTime)
 	m_global_vel = rotate(m_vel, m_rot); // Convert local velocity to global velocity
 
 	FVector m_pos = GetActorLocation();
-	m_global_vel.Z += (3310.0f - m_pos.Z) * 1500.0f * DeltaTime; // Upthrust by water
+	m_global_vel.Z += (3150.0f - m_pos.Z) * 1500.0f * DeltaTime; // Upthrust by water
 
 	SetActorLocation(m_pos + m_global_vel * DeltaTime);
 
-
+// LOGS
 	//"MyCharacter's Location is %s"
 	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Rudder Angle: ") + FString::SanitizeFloat(rudderAngle.getRequested()) +
 		FString("  |  ") + FString::SanitizeFloat(rudderAngle.get()));
 	GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Red, FString("Thrust Power: ") + FString::SanitizeFloat(thrustPower.getRequested()) +
 		FString("  |  ") + FString::SanitizeFloat(thrustPower.get()));
-
-
-	/*
-
-
-	// Rotation
-	{
-	if(rudder_input_dir != 0) rudderAngle.setRequested(rudderAngle.getRequested() + rudder_input_dir * 30.0f * DeltaTime);
-	rudderAngle.step(DeltaTime);
-	SetActorRotation(FRotator(0, rudderAngle.get(), 0));
-	}
-
-	// Handle movement
-	{
-	thrustPower.step(DeltaTime);
-
-	FVector CurrentVelocity = GetActorRotation().Vector() * thrustPower.get();
-	if (!CurrentVelocity.IsZero())
-	{
-	FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-	SetActorLocation(NewLocation);
-	}
-	}*/
 }
 
 // Called to bind functionality to input

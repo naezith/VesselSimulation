@@ -4,7 +4,9 @@
 
 #include <vector>
 #include "GameFramework/Pawn.h"
+#include "Stepper.h"
 #include "Vessel.generated.h"
+
 
 UCLASS()
 class VESSELSIMULATION_API AVessel : public APawn
@@ -28,6 +30,7 @@ public:
 		USceneComponent* OurVisibleComponent;
 
 	// Vessel Control
+	/*
 	class Stepper {
 	public:
 		Stepper() {}
@@ -56,7 +59,7 @@ public:
 		float m_speed;
 		float m_requested;
 	};
-
+	*/
 	Stepper thrustPower;
 	Stepper rudderAngle;
 
