@@ -26,6 +26,7 @@ Ship::Ship()
 void Ship::init(FVector _pos, FVector _rot) {
 	m_pos = _pos;
 	m_rot = _rot;
+	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = FVector(0, 0, 0);
 }
 
 FVector Ship::getPosition() {
@@ -66,8 +67,6 @@ float Ship::getRequestedRudderAngle() {
 }
 
 void Ship::update(float _dt) {
-	// ANGULAR
-	// Angular Acceleration
 	const float MAX_RUDDER_ANGLE = 35.0f; // Standard limit
 	if (rudder_input_dir != 0) {
 		rudderAngle.setRequested(FMath::Max(FMath::Min(rudderAngle.getRequested() + rudder_input_dir * 20.0f * _dt, MAX_RUDDER_ANGLE), -MAX_RUDDER_ANGLE));
@@ -75,14 +74,14 @@ void Ship::update(float _dt) {
 	rudderAngle.step(_dt);
 	thrustPower.step(_dt);
 
-	// ANGULAR
+// ANGULAR
 	// Angular Acceleration
 	m_ang_accel.X = -m_ang_vel.Z * m_vel.X * 0.001f // Yaw affects roll
-		- FMath::Sign(m_rot.X)* m_rot.X * m_rot.X * 0.2f; // Ship wants it's roll to be 0, drag
+					-FMath::Sign(m_rot.X)* m_rot.X * m_rot.X * 0.2f; // Ship wants it's roll to be 0, drag
 	m_ang_accel.Y = +m_vel.X * 0.01f // Surge affects pitch, lifts the front
-		- FMath::Sign(m_rot.Y)* m_rot.Y * m_rot.Y * 1.0f; // Ship wants it's pitch to be 0, drag
+					-FMath::Sign(m_rot.Y)* m_rot.Y * m_rot.Y * 1.0f; // Ship wants it's pitch to be 0, drag
 	m_ang_accel.Z = +rudderAngle.get() * m_vel.X * 0.001f
-		- FMath::Sign(m_ang_vel.Z) * m_ang_vel.Z * m_ang_vel.Z * 0.2f;
+					-FMath::Sign(m_ang_vel.Z) * m_ang_vel.Z * m_ang_vel.Z * 0.2f;
 
 
 	// Drag
@@ -91,11 +90,11 @@ void Ship::update(float _dt) {
 	m_ang_vel += m_ang_accel * _dt;
 	m_rot += m_ang_vel * _dt;
 
-	// VECTOR
+// VECTOR
 	// Vector Acceleration
 	m_accel.X = 25.0f*thrustPower.get(); // Engine causes surge
 	m_accel.Y = -m_ang_vel.Z // Rudder causes drift
-		- m_ang_vel.X; // Roll causes drift
+				-m_ang_vel.X; // Roll causes drift
 	m_accel.Z = 0;
 
 	// Drag
@@ -103,8 +102,12 @@ void Ship::update(float _dt) {
 
 	m_vel += m_accel * _dt;
 	m_global_vel = rotate(m_vel, m_rot); // Convert local velocity to global velocity
-
 	m_global_vel.Z += (3150.0f - m_pos.Z) * 1500.0f * _dt; // Upthrust by water
+	m_pos += m_global_vel * _dt;
+
+	GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Position: ") + FString::SanitizeFloat(m_pos.X) +
+																  FString(", ") + FString::SanitizeFloat(m_pos.Y) +
+																  FString(", ") + FString::SanitizeFloat(m_pos.Z));
 }
 
 static const float DEG2RAD = 0.01745329251;
@@ -115,17 +118,17 @@ FVector Ship::rotate(const FVector& loc, const FVector& eul) {
 	float theta = eul.Y*DEG2RAD;
 	float psi = eul.Z*DEG2RAD;
 
-	global.X = +loc.X * cos(psi) * cos(theta)
-		+ loc.Y * (cos(psi) * sin(theta) * sin(phi) - sin(psi) * cos(phi))
-		+ loc.Z * (cos(psi) * sin(theta) * cos(phi) + sin(psi) * sin(phi));
+	global.X = + loc.X * cos(psi) * cos(theta)
+			   + loc.Y * (cos(psi) * sin(theta) * sin(phi) - sin(psi) * cos(phi))
+			   + loc.Z * (cos(psi) * sin(theta) * cos(phi) + sin(psi) * sin(phi));
 
-	global.Y = +loc.X * cos(theta) * sin(psi)
-		+ loc.Y * (sin(phi) * sin(theta) * sin(psi) + cos(phi) * cos(psi))
-		+ loc.Z * (cos(phi) * sin(theta) * sin(psi) - sin(phi) * cos(psi));
+	global.Y = + loc.X * cos(theta) * sin(psi)
+			   + loc.Y * (sin(phi) * sin(theta) * sin(psi) + cos(phi) * cos(psi))
+			   + loc.Z * (cos(phi) * sin(theta) * sin(psi) - sin(phi) * cos(psi));
 
-	global.Z = -loc.X * sin(theta)
-		+ loc.Y * sin(phi) * cos(theta)
-		+ loc.Z * cos(phi) * cos(theta);
+	global.Z = - loc.X * sin(theta)
+			   + loc.Y * sin(phi) * cos(theta)
+			   + loc.Z * cos(phi) * cos(theta);
 
 	return global;
 }

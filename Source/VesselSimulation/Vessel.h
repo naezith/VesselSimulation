@@ -14,7 +14,7 @@ class VESSELSIMULATION_API AVessel : public APawn
 public:
 	// Sets default values for this pawn's properties
 	AVessel();
-
+	~AVessel();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -26,7 +26,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* OurVisibleComponent;
-	IShip* m_ship;
+	IShip* m_ship = nullptr;
 
 	//Input functions
 	int rudder_input_dir = 0;

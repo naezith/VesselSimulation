@@ -18,18 +18,23 @@ AVessel::AVessel()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	OurVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OurVisibleComponent"));
 	OurVisibleComponent->AttachTo(RootComponent);
-	
+}
 
-	m_ship = new Ship();
-	
-	FRotator rot = GetActorRotation();
-	m_ship->init(GetActorLocation(), FVector(rot.Roll, rot.Pitch, rot.Yaw));
+AVessel::~AVessel() {
+	if (m_ship != nullptr) delete m_ship;
 }
 
 // Called when the game starts or when spawned
 void AVessel::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if(m_ship == nullptr){
+		m_ship = new Ship();
+
+		FRotator rot = GetActorRotation();
+		m_ship->init(GetActorLocation(), FVector(rot.Roll, rot.Pitch, rot.Yaw));
+	}
 }
 
 // Called every frame
@@ -57,7 +62,6 @@ void AVessel::Tick(float DeltaTime)
 	SetActorRotation(FRotator(euler_rot.Y, euler_rot.Z, euler_rot.X));
 
 
-	
 // LOGS
 	//"MyCharacter's Location is %s"
 	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Rudder Angle: ") + FString::SanitizeFloat(m_ship->getRequestedRudderAngle()) +
