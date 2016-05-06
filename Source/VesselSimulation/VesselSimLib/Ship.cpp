@@ -30,17 +30,19 @@ void vsl::Ship::setDynamics(IDynamics& _dynamics) {
 	m_dynamics.reset(&_dynamics);
 }
 
-void vsl::Ship::init(FVector _pos, FVector _rot) {
+using vsl::Utils::Vector;
+
+void vsl::Ship::init(Vector _pos, Vector _rot) {
 	m_pos = _pos;
 	m_rot = _rot;
-	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = FVector(0, 0, 0);
+	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = Vector(0, 0, 0);
 }
 
-FVector vsl::Ship::getPosition() {
+Vector vsl::Ship::getPosition() {
 	return m_pos;
 }
 
-FVector vsl::Ship::getRotation() {
+Vector vsl::Ship::getRotation() {
 	return m_rot;
 }
 void vsl::Ship::setRudderDirection(int _dir) {
@@ -75,19 +77,19 @@ void vsl::Ship::update(float _dt) {
 	GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Red, FString("Thrust Power: ") + FString::SanitizeFloat(getRequestedThrustPower()) +
 		FString("  |  ") + FString::SanitizeFloat(getCurrentThrustPower()));
 
-	GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Position: ") + FString::SanitizeFloat(m_pos.X) +
-		FString(", ") + FString::SanitizeFloat(m_pos.Y) +
-		FString(", ") + FString::SanitizeFloat(m_pos.Z));
-	GEngine->AddOnScreenDebugMessage(4, 5.f, FColor::Red, FString("Velocity: ") + FString::SanitizeFloat(m_vel.X) +
-		FString(", ") + FString::SanitizeFloat(m_vel.Y) +
-		FString(", ") + FString::SanitizeFloat(m_vel.Z));
-	GEngine->AddOnScreenDebugMessage(5, 5.f, FColor::Red, FString("Acceleration: ") + FString::SanitizeFloat(m_accel.X) +
-		FString(", ") + FString::SanitizeFloat(m_accel.Y) +
-		FString(", ") + FString::SanitizeFloat(m_accel.Z));
-	GEngine->AddOnScreenDebugMessage(6, 5.f, FColor::Red, FString("Angular Acceleration: ") + FString::SanitizeFloat(m_ang_accel.X) +
-		FString(", ") + FString::SanitizeFloat(m_ang_accel.Y) +
-		FString(", ") + FString::SanitizeFloat(m_ang_accel.Z));
-	GEngine->AddOnScreenDebugMessage(7, 5.f, FColor::Red, FString("Angular Velocity: ") + FString::SanitizeFloat(m_ang_vel.X) +
-		FString(", ") + FString::SanitizeFloat(m_ang_vel.Y) +
-		FString(", ") + FString::SanitizeFloat(m_ang_vel.Z));
+	GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Position: ") + FString::SanitizeFloat(m_pos.x) +
+		FString(", ") + FString::SanitizeFloat(m_pos.y) +
+		FString(", ") + FString::SanitizeFloat(m_pos.z));
+	GEngine->AddOnScreenDebugMessage(4, 5.f, FColor::Red, FString("Velocity: ") + FString::SanitizeFloat(m_vel.x) +
+		FString(", ") + FString::SanitizeFloat(m_vel.y) +
+		FString(", ") + FString::SanitizeFloat(m_vel.z));
+	GEngine->AddOnScreenDebugMessage(5, 5.f, FColor::Red, FString("Acceleration: ") + FString::SanitizeFloat(m_accel.x) +
+		FString(", ") + FString::SanitizeFloat(m_accel.y) +
+		FString(", ") + FString::SanitizeFloat(m_accel.z));
+	GEngine->AddOnScreenDebugMessage(6, 5.f, FColor::Red, FString("Angular Acceleration: ") + FString::SanitizeFloat(m_ang_accel.x) +
+		FString(", ") + FString::SanitizeFloat(m_ang_accel.y) +
+		FString(", ") + FString::SanitizeFloat(m_ang_accel.z));
+	GEngine->AddOnScreenDebugMessage(7, 5.f, FColor::Red, FString("Angular Velocity: ") + FString::SanitizeFloat(m_ang_vel.x) +
+		FString(", ") + FString::SanitizeFloat(m_ang_vel.y) +
+		FString(", ") + FString::SanitizeFloat(m_ang_vel.z));
 }

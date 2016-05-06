@@ -1,15 +1,17 @@
 #include "VesselSimulation.h"
 #include "DynamicData.h"
-#include "Runtime/Core/Public/GenericPlatform/GenericPlatformMath.h"
+#include "VesselSimLib/Utility.h"
 
-vsl::DynamicData::DynamicData(FVector _pos, FVector _rot) {
+using vsl::Utils::Vector;
+
+vsl::DynamicData::DynamicData(Vector _pos, Vector _rot) {
 	init(_pos, _rot);
 }
 
-void vsl::DynamicData::init(FVector _pos, FVector _rot) {
+void vsl::DynamicData::init(Vector _pos, Vector _rot) {
 	m_pos = _pos;
 	m_rot = _rot;
-	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = FVector(0, 0, 0);
+	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = Vector(0, 0, 0);
 }
 
 

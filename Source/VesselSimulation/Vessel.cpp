@@ -31,7 +31,8 @@ void AVessel::BeginPlay() {
 		m_ship = new vsl::Ship();
 
 		FRotator rot = GetActorRotation();
-		m_ship->init(GetActorLocation(), FVector(rot.Roll, rot.Pitch, rot.Yaw));
+		FVector loc = GetActorLocation();
+		m_ship->init(vsl::Utils::Vector(loc.X, loc.Y, loc.Z), vsl::Utils::Vector(rot.Roll, rot.Pitch, rot.Yaw));
 	}
 }
 
@@ -52,11 +53,12 @@ void AVessel::Tick(float DeltaTime) {
 	m_ship->update(DeltaTime);
 
 	// Get position
-	SetActorLocation(m_ship->getPosition());
+	vsl::Utils::Vector pos = m_ship->getPosition();
+	SetActorLocation(FVector(pos.x, pos.y, pos.z));
 
 	// Get rotation
-	FVector euler_rot = m_ship->getRotation();
-	SetActorRotation(FRotator(euler_rot.Y, euler_rot.Z, euler_rot.X));
+	vsl::Utils::Vector euler_rot = m_ship->getRotation();
+	SetActorRotation(FRotator(euler_rot.y, euler_rot.z, euler_rot.x));
 }
 
 // Called to bind functionality to input

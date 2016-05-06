@@ -2,14 +2,14 @@
 #define DYNAMICDATA_H
 
 #include "VesselSimLib/Stepper.h"
-#include <Runtime/Core/Public/Math/Vector.h>
+#include "VesselSimLib/Utility.h"
 
 namespace vsl {
 	class VESSELSIMULATION_API DynamicData {
 	public:
 		DynamicData() {}
-		DynamicData(FVector _pos, FVector _rot);
-		void init(FVector _pos, FVector _rot);
+		DynamicData(vsl::Utils::Vector _pos, vsl::Utils::Vector _rot);
+		void init(vsl::Utils::Vector _pos, vsl::Utils::Vector _rot);
 
 		float getCurrentRudderAngle();
 		float getRequestedRudderAngle();
@@ -19,9 +19,7 @@ namespace vsl {
 		Stepper thrustPower;
 		Stepper rudderAngle;
 
-		FVector m_ang_accel, m_ang_vel, m_rot;
-		FVector m_accel, m_vel, m_pos;
-		FVector m_global_vel;
+		vsl::Utils::Vector m_ang_accel, m_ang_vel, m_rot, m_accel, m_vel, m_pos, m_global_vel;
 		// serialize
 	};
 }

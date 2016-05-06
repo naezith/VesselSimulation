@@ -11,10 +11,10 @@ namespace vsl {
 	public:
 		Ship();
 
-		void init(FVector _pos, FVector _rot) override;
+		void init(vsl::Utils::Vector _pos, vsl::Utils::Vector _rot) override;
 		void update(float _dt) override;
-		FVector getPosition() override;
-		FVector getRotation() override;
+		vsl::Utils::Vector getPosition() override;
+		vsl::Utils::Vector getRotation() override;
 
 		// Dynamics
 		void setDynamics(IDynamics& _dynamics);

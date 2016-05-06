@@ -1,29 +1,33 @@
 #include "VesselSimulation.h"
 #include "Utility.h"
 
-FVector vsl::Utils::rotate(const FVector& loc, const FVector& eul) {
-	FVector global;
+using vsl::Utils::Vector;
 
-	float phi = eul.X*DEG2RAD;
-	float theta = eul.Y*DEG2RAD;
-	float psi = eul.Z*DEG2RAD;
+Vector vsl::Utils::rotate(const Vector& loc, const Vector& eul) {
+	Vector global;
 
-	global.X = +loc.X * cos(psi) * cos(theta)
-			 + loc.Y * (cos(psi) * sin(theta) * sin(phi) - sin(psi) * cos(phi))
-			 + loc.Z * (cos(psi) * sin(theta) * cos(phi) + sin(psi) * sin(phi));
+	float phi = eul.x*DEG2RAD;
+	float theta = eul.y*DEG2RAD;
+	float psi = eul.z*DEG2RAD;
 
-	global.Y = +loc.X * cos(theta) * sin(psi)
-			 + loc.Y * (sin(phi) * sin(theta) * sin(psi) + cos(phi) * cos(psi))
-			 + loc.Z * (cos(phi) * sin(theta) * sin(psi) - sin(phi) * cos(psi));
+	global.x = +loc.x * cos(psi) * cos(theta)
+			 + loc.y * (cos(psi) * sin(theta) * sin(phi) - sin(psi) * cos(phi))
+			 + loc.z * (cos(psi) * sin(theta) * cos(phi) + sin(psi) * sin(phi));
 
-	global.Z = -loc.X * sin(theta)
-			 + loc.Y * sin(phi) * cos(theta)
-			 + loc.Z * cos(phi) * cos(theta);
+	global.y = +loc.x * cos(theta) * sin(psi)
+			 + loc.y * (sin(phi) * sin(theta) * sin(psi) + cos(phi) * cos(psi))
+			 + loc.z * (cos(phi) * sin(theta) * sin(psi) - sin(phi) * cos(psi));
+
+	global.z = -loc.x * sin(theta)
+			 + loc.y * sin(phi) * cos(theta)
+			 + loc.z * cos(phi) * cos(theta);
 
 	return global;
 }
 
-using vsl::Utils::Vector;
+int vsl::Utils::sign(float a) {
+	return (a > 0) ? 1 : ((a < 0) ? -1 : 0);
+}
 
 Vector::Vector() : x(0), y(0), z(0) { }
 
