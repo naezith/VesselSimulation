@@ -29,7 +29,7 @@ void vsl::LowFidelityDynamics::update(DynamicData& _dyn, float _dt) {
 
 // VECTOR
 	// Vector Acceleration
-	accel.X = 50.0f*_dyn.getCurrentThrustPower() // Engine causes surge
+	accel.X = 500.0f*_dyn.getCurrentThrustPower() // Engine causes surge
 			- FMath::Sign(vel.X) * vel.X * vel.X * 0.0001f;
 	accel.Y = -ang_vel.Z*20.0f // Rudder causes drift
 			- ang_vel.X*20.0f // Roll causes drift
