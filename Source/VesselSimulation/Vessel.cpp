@@ -60,14 +60,6 @@ void AVessel::Tick(float DeltaTime)
 	// Get rotation
 	FVector euler_rot = m_ship->getRotation();
 	SetActorRotation(FRotator(euler_rot.Y, euler_rot.Z, euler_rot.X));
-
-
-// LOGS
-	//"MyCharacter's Location is %s"
-	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Rudder Angle: ") + FString::SanitizeFloat(m_ship->getRequestedRudderAngle()) +
-		FString("  |  ") + FString::SanitizeFloat(m_ship->getCurrentRudderAngle()));
-	GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Red, FString("Thrust Power: ") + FString::SanitizeFloat(m_ship->getRequestedThrustPower()) +
-		FString("  |  ") + FString::SanitizeFloat(m_ship->getCurrentThrustPower()));
 }
 
 // Called to bind functionality to input

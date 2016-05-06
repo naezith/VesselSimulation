@@ -3,8 +3,8 @@
 
 class VESSELSIMULATION_API Stepper {
     public:
-		Stepper(){}
-        Stepper(float _init, float _speed);
+		Stepper();
+		void init(float _init, float _speed);
 
         void step(float _dt);
 

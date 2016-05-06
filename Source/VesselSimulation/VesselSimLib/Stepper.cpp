@@ -2,7 +2,12 @@
 #include "Stepper.h"
 #include "Runtime/Core/Public/GenericPlatform/GenericPlatformMath.h"
 
-Stepper::Stepper(float _init, float _speed) : m_current(_init), m_requested(_init), m_vel(fabs(_speed)) {}
+Stepper::Stepper() : m_current(0), m_requested(0), m_vel(0) { }
+
+void Stepper::init(float _init, float _speed) {
+	m_current = m_requested = _init;
+	m_vel = fabs(_speed);
+}
 
 void Stepper::step(float _dt) {
     if(m_current < m_requested) {
