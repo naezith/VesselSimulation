@@ -3,7 +3,7 @@
 #include <Runtime/Core/Public/Math/UnrealMathUtility.h>
 #include "VesselSimLib/LowFidelityDynamics.h"
 
-Ship::Ship() {
+vsl::Ship::Ship() {
 	thrustPower.init(0.0f, 50.0f);
 	rudderAngle.init(0.0f, 10.0f);
 
@@ -26,38 +26,38 @@ Ship::Ship() {
 	setDynamics(*(new LowFidelityDynamics()) );
 }
 
-void Ship::setDynamics(IDynamics& _dynamics) {
+void vsl::Ship::setDynamics(IDynamics& _dynamics) {
 	m_dynamics.reset(&_dynamics);
 }
 
-void Ship::init(FVector _pos, FVector _rot) {
+void vsl::Ship::init(FVector _pos, FVector _rot) {
 	m_pos = _pos;
 	m_rot = _rot;
 	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = FVector(0, 0, 0);
 }
 
-FVector Ship::getPosition() {
+FVector vsl::Ship::getPosition() {
 	return m_pos;
 }
 
-FVector Ship::getRotation() {
+FVector vsl::Ship::getRotation() {
 	return m_rot;
 }
-void Ship::setRudderDirection(int _dir) {
+void vsl::Ship::setRudderDirection(int _dir) {
 	rudder_input_dir = _dir;
 }
 
-void Ship::incrementEngineOrder() {
+void vsl::Ship::incrementEngineOrder() {
 	if (m_engine_order_idx < m_engine_orders.size() - 1)
 		thrustPower.setRequested(m_engine_orders[++m_engine_order_idx]);
 }
 
-void Ship::decrementEngineOrder() {
+void vsl::Ship::decrementEngineOrder() {
 	if (m_engine_order_idx > 0)
 		thrustPower.setRequested(m_engine_orders[--m_engine_order_idx]);
 }
 
-void Ship::update(float _dt) {
+void vsl::Ship::update(float _dt) {
 	const float MAX_RUDDER_ANGLE = 35.0f; // Standard limit
 	if (rudder_input_dir != 0) {
 		rudderAngle.setRequested(FMath::Max(FMath::Min(rudderAngle.getRequested() + rudder_input_dir * 20.0f * _dt, MAX_RUDDER_ANGLE), -MAX_RUDDER_ANGLE));

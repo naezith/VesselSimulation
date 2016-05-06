@@ -4,9 +4,10 @@
 #include "VesselSimLib/DynamicData.h"
 #include "VesselSimLib/IDynamics.h"
 
-class VESSELSIMULATION_API LowFidelityDynamics : public IDynamics {
-public:
-	virtual void update(DynamicData& _dyn, float _dt);
-};
-
+namespace vsl {
+	class VESSELSIMULATION_API LowFidelityDynamics : public IDynamics {
+	public:
+		virtual void update(DynamicData& _dyn, float _dt);
+	};
+}
 #endif // LOWFIDELITYDYNAMICS_H

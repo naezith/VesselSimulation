@@ -26,7 +26,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* OurVisibleComponent;
-	IShip* m_ship = nullptr;
+	vsl::IShip* m_ship = nullptr;
 
 	//Input functions
 	int rudder_input_dir = 0;

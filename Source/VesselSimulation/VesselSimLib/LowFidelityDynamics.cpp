@@ -2,7 +2,7 @@
 #include "VesselSimLib/LowFidelityDynamics.h"
 #include "VesselSimLib/Utility.h"
 
-void LowFidelityDynamics::update(DynamicData& _dyn, float _dt) {
+void vsl::LowFidelityDynamics::update(DynamicData& _dyn, float _dt) {
 	FVector& ang_accel = _dyn.m_ang_accel;
 	FVector& rot = _dyn.m_rot;
 	FVector& accel = _dyn.m_accel;

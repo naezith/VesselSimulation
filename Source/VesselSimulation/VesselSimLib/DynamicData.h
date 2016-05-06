@@ -4,9 +4,10 @@
 #include "VesselSimLib/Stepper.h"
 #include <Runtime/Core/Public/Math/Vector.h>
 
-class VESSELSIMULATION_API DynamicData {
-    public:
-		DynamicData(){}
+namespace vsl {
+	class VESSELSIMULATION_API DynamicData {
+	public:
+		DynamicData() {}
 		DynamicData(FVector _pos, FVector _rot);
 		void init(FVector _pos, FVector _rot);
 
@@ -22,7 +23,7 @@ class VESSELSIMULATION_API DynamicData {
 		FVector m_accel, m_vel, m_pos;
 		FVector m_global_vel;
 		// serialize
-};
-
+	};
+}
 
 #endif // DYNAMICDATA_H

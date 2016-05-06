@@ -6,8 +6,7 @@
 #include "Runtime/Core/Public/Containers/UnrealString.h"
 
 // Sets default values
-AVessel::AVessel()
-{
+AVessel::AVessel() {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -25,12 +24,11 @@ AVessel::~AVessel() {
 }
 
 // Called when the game starts or when spawned
-void AVessel::BeginPlay()
-{
+void AVessel::BeginPlay() {
 	Super::BeginPlay();
 	
 	if(m_ship == nullptr){
-		m_ship = new Ship();
+		m_ship = new vsl::Ship();
 
 		FRotator rot = GetActorRotation();
 		m_ship->init(GetActorLocation(), FVector(rot.Roll, rot.Pitch, rot.Yaw));
@@ -38,8 +36,7 @@ void AVessel::BeginPlay()
 }
 
 // Called every frame
-void AVessel::Tick(float DeltaTime)
-{
+void AVessel::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	
 	// Send inputs
@@ -63,8 +60,7 @@ void AVessel::Tick(float DeltaTime)
 }
 
 // Called to bind functionality to input
-void AVessel::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
+void AVessel::SetupPlayerInputComponent(class UInputComponent* InputComponent) {
 	Super::SetupPlayerInputComponent(InputComponent);
 
 	InputComponent->BindAction("IncrementEngineStep", IE_Pressed, this, &AVessel::EngineUp);

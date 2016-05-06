@@ -1,25 +1,26 @@
 #ifndef STEPPER_H
 #define STEPPER_H
 
-class VESSELSIMULATION_API Stepper {
-    public:
+namespace vsl {
+	class VESSELSIMULATION_API Stepper {
+	public:
 		Stepper();
 		void init(float _init, float _speed);
 
-        void step(float _dt);
+		void step(float _dt);
 
-        float get();
-        void setSpeed(float _speed);
-        float getRequested();
-        void setRequested(float _requested);
+		float get();
+		void setSpeed(float _speed);
+		float getRequested();
+		void setRequested(float _requested);
 
-        void reset(float _value);
+		void reset(float _value);
 
-    private:
-        float m_current;
-        float m_vel;
-        float m_requested;
-};
-
+	private:
+		float m_current;
+		float m_vel;
+		float m_requested;
+	};
+}
 
 #endif // STEPPER_H

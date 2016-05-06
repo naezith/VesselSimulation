@@ -1,7 +1,7 @@
 #include "VesselSimulation.h"
 #include "Utility.h"
 
-FVector Utils::rotate(const FVector& loc, const FVector& eul) {
+FVector vsl::Utils::rotate(const FVector& loc, const FVector& eul) {
 	FVector global;
 
 	float phi = eul.X*DEG2RAD;
