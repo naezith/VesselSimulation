@@ -30,7 +30,7 @@ void vsl::Ship::setDynamics(IDynamics& _dynamics) {
 	m_dynamics.reset(&_dynamics);
 }
 
-using vsl::Utils::Vector;
+using vsl::Vector;
 
 void vsl::Ship::init(Vector _pos, Vector _rot) {
 	m_pos = _pos;

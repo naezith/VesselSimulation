@@ -32,7 +32,7 @@ void AVessel::BeginPlay() {
 
 		FRotator rot = GetActorRotation();
 		FVector loc = GetActorLocation();
-		m_ship->init(vsl::Utils::Vector(loc.X, loc.Y, loc.Z), vsl::Utils::Vector(rot.Roll, rot.Pitch, rot.Yaw));
+		m_ship->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
 	}
 }
 
@@ -53,11 +53,11 @@ void AVessel::Tick(float DeltaTime) {
 	m_ship->update(DeltaTime);
 
 	// Get position
-	vsl::Utils::Vector pos = m_ship->getPosition();
+	vsl::Vector pos = m_ship->getPosition();
 	SetActorLocation(FVector(pos.x, pos.y, pos.z));
 
 	// Get rotation
-	vsl::Utils::Vector euler_rot = m_ship->getRotation();
+	vsl::Vector euler_rot = m_ship->getRotation();
 	SetActorRotation(FRotator(euler_rot.y, euler_rot.z, euler_rot.x));
 }
 

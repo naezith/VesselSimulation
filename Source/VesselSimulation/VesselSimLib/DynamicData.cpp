@@ -2,7 +2,7 @@
 #include "DynamicData.h"
 #include "VesselSimLib/Utility.h"
 
-using vsl::Utils::Vector;
+using vsl::Vector;
 
 vsl::DynamicData::DynamicData(Vector _pos, Vector _rot) {
 	init(_pos, _rot);

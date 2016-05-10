@@ -8,8 +8,8 @@ namespace vsl {
 	class VESSELSIMULATION_API DynamicData {
 	public:
 		DynamicData() {}
-		DynamicData(vsl::Utils::Vector _pos, vsl::Utils::Vector _rot);
-		void init(vsl::Utils::Vector _pos, vsl::Utils::Vector _rot);
+		DynamicData(vsl::Vector _pos, vsl::Vector _rot);
+		void init(vsl::Vector _pos, vsl::Vector _rot);
 
 		float getCurrentRudderAngle();
 		float getRequestedRudderAngle();
@@ -19,7 +19,7 @@ namespace vsl {
 		Stepper thrustPower;
 		Stepper rudderAngle;
 
-		vsl::Utils::Vector m_ang_accel, m_ang_vel, m_rot, m_accel, m_vel, m_pos, m_global_vel;
+		vsl::Vector m_ang_accel, m_ang_vel, m_rot, m_accel, m_vel, m_pos, m_global_vel;
 		// serialize
 	};
 }

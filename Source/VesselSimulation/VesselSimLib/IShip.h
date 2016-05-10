@@ -8,10 +8,10 @@ namespace vsl {
 		IShip() = default;
 		~IShip() = default;
 
-		virtual void init(vsl::Utils::Vector _pos, vsl::Utils::Vector _rot) = 0;
+		virtual void init(vsl::Vector _pos, vsl::Vector _rot) = 0;
 		virtual void update(float _dt) = 0;
-		virtual vsl::Utils::Vector getPosition() = 0;
-		virtual vsl::Utils::Vector getRotation() = 0;
+		virtual vsl::Vector getPosition() = 0;
+		virtual vsl::Vector getRotation() = 0;
 
 		virtual void incrementEngineOrder() = 0;
 		virtual void decrementEngineOrder() = 0;

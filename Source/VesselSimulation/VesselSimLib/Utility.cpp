@@ -1,9 +1,9 @@
 #include "VesselSimulation.h"
 #include "Utility.h"
 
-using vsl::Utils::Vector;
+using vsl::Vector;
 
-Vector vsl::Utils::rotate(const Vector& loc, const Vector& eul) {
+Vector vsl::Math::rotate(const Vector& loc, const Vector& eul) {
 	Vector global;
 
 	float phi = eul.x*DEG2RAD;
@@ -25,7 +25,7 @@ Vector vsl::Utils::rotate(const Vector& loc, const Vector& eul) {
 	return global;
 }
 
-int vsl::Utils::sign(float a) {
+int vsl::Math::sign(float a) {
 	return (a > 0) ? 1 : ((a < 0) ? -1 : 0);
 }
 
