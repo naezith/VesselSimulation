@@ -1,7 +1,5 @@
-#ifndef LOWFIDELITYDYNAMICS_H
-#define LOWFIDELITYDYNAMICS_H
+#pragma once
 
-#include "VesselSimLib/DynamicData.h"
 #include "VesselSimLib/IDynamics.h"
 
 namespace vsl {
@@ -10,4 +8,3 @@ namespace vsl {
 		virtual void step(DynamicData& _dyn, float _dt);
 	};
 }
-#endif // LOWFIDELITYDYNAMICS_H

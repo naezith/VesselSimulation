@@ -5,7 +5,6 @@
 #include "VesselSimLib/IShip.h"
 #include "VesselSimLib/IDynamics.h"
 #include "VesselSimLib/IController.h"
-#include "VesselSimLib/DynamicData.h"
 
 namespace vsl {
 	class VESSELSIMULATION_API Ship : public IShip, public DynamicData {

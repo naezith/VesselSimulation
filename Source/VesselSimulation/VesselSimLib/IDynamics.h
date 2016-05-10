@@ -7,6 +7,6 @@ namespace vsl {
 	public:
 		IDynamics() = default;
 		~IDynamics() = default;
-		virtual void step(DynamicData& _dyn, float _dt) = 0;
+		virtual void step(vsl::DynamicData& _dyn, float _dt) = 0;
 	};
 }

@@ -1,5 +1,5 @@
 #include "VesselSimulation.h"
-#include "Utility.h"
+#include "VesselSimLib/Utility.h"
 
 vsl::Vector vsl::Math::rotate(const vsl::Vector& loc, const vsl::Vector& eul) {
 	vsl::Vector global;
@@ -30,6 +30,8 @@ int vsl::Math::sign(float a) {
 vsl::Vector::Vector() : x(0), y(0), z(0) { }
 
 vsl::Vector::Vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z) { }
+
+const vsl::Vector vsl::Vector::Zero() { return vsl::Vector(0, 0, 0); }
 
 vsl::Vector operator -(const vsl::Vector& right) {
 	return vsl::Vector(-right.x, -right.y, -right.z);

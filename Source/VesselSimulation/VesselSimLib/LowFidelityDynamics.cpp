@@ -3,7 +3,7 @@
 #include "VesselSimLib/Utility.h"
 #include <algorithm>
 
-void vsl::LowFidelityDynamics::step(DynamicData& _dyn, float _dt) {
+void vsl::LowFidelityDynamics::step(vsl::DynamicData& _dyn, float _dt) {
 	_dyn.rudderAngle.step(_dt);
 	_dyn.thrustPower.step(_dt);
 
@@ -31,10 +31,10 @@ void vsl::LowFidelityDynamics::step(DynamicData& _dyn, float _dt) {
 	ang_vel += ang_accel * _dt;
 	rot += ang_vel * _dt;
 
-// vsl::Vector
-	// vsl::Vector Acceleration
-	accel.x = 500.0f*_dyn.thrustPower.get() // Engine causes surge
-			- vsl::Math::sign(vel.x) * vel.x * vel.x * 0.0001f;
+// Vector
+	// Vector Acceleration
+	accel.x = 50000.0f*_dyn.thrustPower.get() // Engine causes surge
+			- 0;//vsl::Math::sign(vel.x) * vel.x * vel.x * 0.0001f;
 	accel.y = -ang_vel.z*20.0f // Rudder causes drift
 			- ang_vel.x*20.0f // Roll causes drift
 			- vsl::Math::sign(vel.y) * vel.y * vel.y * 1.0f;
@@ -49,5 +49,5 @@ void vsl::LowFidelityDynamics::step(DynamicData& _dyn, float _dt) {
 	global_vel.z += 1.5f * gravity * std::min(std::max((2000.0f - pos.z), 0.0f) / 25.0f, 1.0f) * _dt; // Upthrust by water
 
 	// Convert local velocity to global velocity and add the environmental velocity
-	pos += (Math::rotate(vel, rot) + global_vel) * _dt;
+	pos += (vsl::Math::rotate(vel, rot) + global_vel) * _dt;
 }

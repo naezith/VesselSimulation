@@ -18,9 +18,13 @@ namespace vsl {
 		Vector();
 		Vector(float _x, float _y, float _z);
 		Vector(const Vector& vec);
+		
 		float x, y, z;
+		
+		static const Vector Zero();
 	};
 }
+
 
 vsl::Vector& operator +=(vsl::Vector& left, const vsl::Vector& right);
 vsl::Vector& operator -=(vsl::Vector& left, const vsl::Vector& right);

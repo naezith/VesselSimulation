@@ -1,9 +1,19 @@
 #include "VesselSimulation.h"
-#include "DynamicData.h"
+#include "VesselSimLib/DynamicData.h"
 #include "VesselSimLib/Utility.h"
+
+vsl::DynamicData::DynamicData() {
+	init(vsl::Vector::Zero(), vsl::Vector::Zero());
+}
 
 vsl::DynamicData::DynamicData(vsl::Vector _pos, vsl::Vector _rot) {
 	init(_pos, _rot);
+}
+
+void vsl::DynamicData::init(vsl::Vector _pos, vsl::Vector _rot) {
+	m_pos = _pos;
+	m_rot = _rot;
+	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = vsl::Vector(0, 0, 0);
 
 	MAX_RUDDER_ANGLE = 35.0f;
 
@@ -22,10 +32,4 @@ vsl::DynamicData::DynamicData(vsl::Vector _pos, vsl::Vector _rot) {
 	int idx = 0;
 	while (m_engine_orders[idx] != 0) ++idx;
 	idx_of_stop = idx;
-}
-
-void vsl::DynamicData::init(vsl::Vector _pos, vsl::Vector _rot) {
-	m_pos = _pos;
-	m_rot = _rot;
-	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = vsl::Vector(0, 0, 0);
 }

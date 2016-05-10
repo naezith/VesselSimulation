@@ -1,5 +1,4 @@
-#ifndef SHIPCONTROLLER_H
-#define SHIPCONTROLLER_H
+#pragma once
 
 #include "VesselSimLib/DynamicData.h"
 #include "VesselSimLib/IController.h"
@@ -32,4 +31,3 @@ namespace vsl {
 		std::auto_ptr<DynamicData> m_dyn;
 	};
 }
-#endif // SHIPCONTROLLER_H

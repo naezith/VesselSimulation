@@ -1,5 +1,4 @@
-#ifndef STEPPER_H
-#define STEPPER_H
+#pragma once
 
 namespace vsl {
 	class VESSELSIMULATION_API Stepper {
@@ -22,5 +21,3 @@ namespace vsl {
 		float m_requested;
 	};
 }
-
-#endif // STEPPER_H

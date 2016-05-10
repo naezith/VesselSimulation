@@ -1,9 +1,7 @@
 #include "VesselSimulation.h"
-#include "Ship.h"
-#include <Runtime/Core/Public/Math/UnrealMathUtility.h>
+#include "VesselSimLib/Ship.h"
 #include "VesselSimLib/LowFidelityDynamics.h"
 #include "VesselSimLib/ShipController.h"
-#include "VesselSimLib/IController.h"
 
 vsl::Ship::Ship() {
 	thrustPower.init(0.0f, 50.0f);

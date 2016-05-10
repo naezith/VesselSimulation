@@ -1,5 +1,5 @@
 #include "VesselSimulation.h"
-#include "Stepper.h"
+#include "VesselSimLib/Stepper.h"
 #include <cmath>
 
 vsl::Stepper::Stepper() : m_current(0), m_requested(0), m_vel(0) { }
