@@ -28,7 +28,7 @@ public:
 	USceneComponent* OurVisibleComponent;
 	vsl::IShip* m_ship = nullptr;
 
-	//Input functions
+	// Unreal Engine Input functions
 	int rudder_input_dir = 0;
 	void RudderInputLeft();
 	void RudderInputCancelLeft();

@@ -2,76 +2,44 @@
 #include "Ship.h"
 #include <Runtime/Core/Public/Math/UnrealMathUtility.h>
 #include "VesselSimLib/LowFidelityDynamics.h"
+#include "VesselSimLib/ShipController.h"
+#include "VesselSimLib/IController.h"
 
 vsl::Ship::Ship() {
 	thrustPower.init(0.0f, 50.0f);
 	rudderAngle.init(0.0f, 10.0f);
 
-	// Initialize engine orders
-	m_engine_orders.push_back(-45);
-	m_engine_orders.push_back(-35);
-	m_engine_orders.push_back(-25);
-	m_engine_orders.push_back(-17);
-	m_engine_orders.push_back(0);
-	m_engine_orders.push_back(21);
-	m_engine_orders.push_back(37);
-	m_engine_orders.push_back(75);
-	m_engine_orders.push_back(100);
-
-	// Find the 0's index
-	int idx = 0;
-	while (m_engine_orders[idx] != 0) ++idx;
-	m_engine_order_idx = idx;
-
-	setDynamics(*(new LowFidelityDynamics()) );
+	setDynamics( *(new LowFidelityDynamics()) );
+	setController( *(new ShipController(this)) );
 }
 
 void vsl::Ship::setDynamics(IDynamics& _dynamics) {
 	m_dynamics.reset(&_dynamics);
 }
 
-using vsl::Vector;
-
-void vsl::Ship::init(Vector _pos, Vector _rot) {
-	m_pos = _pos;
-	m_rot = _rot;
-	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = Vector(0, 0, 0);
+void vsl::Ship::setController(IController& _controller) {
+	m_controller.reset(&_controller);
 }
 
-Vector vsl::Ship::getPosition() {
+void vsl::Ship::init(vsl::Vector _pos, vsl::Vector _rot) {
+	m_pos = _pos;
+	m_rot = _rot;
+	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = vsl::Vector(0, 0, 0);
+}
+
+vsl::Vector vsl::Ship::getPosition() {
 	return m_pos;
 }
 
-Vector vsl::Ship::getRotation() {
+vsl::Vector vsl::Ship::getRotation() {
 	return m_rot;
-}
-void vsl::Ship::setRudderDirection(int _dir) {
-	rudder_input_dir = _dir;
-}
-
-void vsl::Ship::incrementEngineOrder() {
-	if (m_engine_order_idx < m_engine_orders.size() - 1)
-		thrustPower.setRequested(m_engine_orders[++m_engine_order_idx]);
-}
-
-void vsl::Ship::decrementEngineOrder() {
-	if (m_engine_order_idx > 0)
-		thrustPower.setRequested(m_engine_orders[--m_engine_order_idx]);
 }
 
 void vsl::Ship::update(float _dt) {
-	const float MAX_RUDDER_ANGLE = 35.0f; // Standard limit
-	if (rudder_input_dir != 0) {
-		rudderAngle.setRequested(FMath::Max(FMath::Min(rudderAngle.getRequested() + rudder_input_dir * 20.0f * _dt, MAX_RUDDER_ANGLE), -MAX_RUDDER_ANGLE));
-	}
-	rudderAngle.step(_dt);
-	thrustPower.step(_dt);
-
-	m_dynamics->update(*this, _dt);
+	if (m_dynamics.get()) m_dynamics->step(*this, _dt);
 
 
 	// LOGS
-	//"MyCharacter's Location is %s"
 	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Rudder Angle: ") + FString::SanitizeFloat(getRequestedRudderAngle()) +
 		FString("  |  ") + FString::SanitizeFloat(getCurrentRudderAngle()));
 	GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Red, FString("Thrust Power: ") + FString::SanitizeFloat(getRequestedThrustPower()) +
@@ -92,4 +60,51 @@ void vsl::Ship::update(float _dt) {
 	GEngine->AddOnScreenDebugMessage(7, 5.f, FColor::Red, FString("Angular Velocity: ") + FString::SanitizeFloat(m_ang_vel.x) +
 		FString(", ") + FString::SanitizeFloat(m_ang_vel.y) +
 		FString(", ") + FString::SanitizeFloat(m_ang_vel.z));
+}
+
+
+
+// CONTROLLER LINK
+// Engine 
+void vsl::Ship::setEngineOrder(int _order) {
+	m_controller->setRudderAngle(_order);
+}
+
+int vsl::Ship::getEngineOrder() {
+	return m_controller->getEngineOrder();
+}
+
+int vsl::Ship::getMinEngineOrder() {
+	return m_controller->getMinEngineOrder();
+}
+
+int vsl::Ship::getMaxEngineOrder() {
+	return m_controller->getMaxEngineOrder();
+}
+
+
+int vsl::Ship::getRequestedThrustPower() {
+	return m_controller->getRequestedThrustPower();
+}
+
+int vsl::Ship::getCurrentThrustPower() {
+	return m_controller->getCurrentThrustPower();
+}
+
+
+// Rudder
+void vsl::Ship::setRudderAngle(float _degrees) {
+	m_controller->setRudderAngle(_degrees);
+}
+
+float vsl::Ship::getRequestedRudderAngle() {
+	return m_controller->getRequestedRudderAngle();
+}
+
+float vsl::Ship::getCurrentRudderAngle() {
+	return m_controller->getCurrentRudderAngle();
+}
+
+float vsl::Ship::getMaxRudderAngle() {
+	return m_controller->getMaxRudderAngle();
 }

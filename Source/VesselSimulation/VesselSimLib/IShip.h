@@ -1,9 +1,11 @@
 #pragma once
 
 #include "VesselSimLib/Utility.h"
+#include "VesselSimLib/IController.h"
+#include "VesselSimLib/IDynamics.h"
 
 namespace vsl {
-	class VESSELSIMULATION_API IShip {
+	class VESSELSIMULATION_API IShip : public vsl::IController {
 	public:
 		IShip() = default;
 		~IShip() = default;
@@ -12,9 +14,5 @@ namespace vsl {
 		virtual void update(float _dt) = 0;
 		virtual vsl::Vector getPosition() = 0;
 		virtual vsl::Vector getRotation() = 0;
-
-		virtual void incrementEngineOrder() = 0;
-		virtual void decrementEngineOrder() = 0;
-		virtual void setRudderDirection(int _dir) = 0;
 	};
 }

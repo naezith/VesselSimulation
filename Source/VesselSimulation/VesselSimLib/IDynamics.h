@@ -1,6 +1,5 @@
 #pragma once
 
-#include "VesselSimLib/IShip.h"
 #include "VesselSimLib/DynamicData.h"
 
 namespace vsl {
@@ -8,6 +7,6 @@ namespace vsl {
 	public:
 		IDynamics() = default;
 		~IDynamics() = default;
-		virtual void update(DynamicData& _dyn, float _dt) = 0;
+		virtual void step(DynamicData& _dyn, float _dt) = 0;
 	};
 }

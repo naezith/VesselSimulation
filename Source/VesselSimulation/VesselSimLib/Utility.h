@@ -17,7 +17,7 @@ namespace vsl {
 	public:
 		Vector();
 		Vector(float _x, float _y, float _z);
-		Vector(const Vector& vector);
+		Vector(const Vector& vec);
 		float x, y, z;
 	};
 }

@@ -4,6 +4,7 @@
 #include <memory>
 #include "VesselSimLib/IShip.h"
 #include "VesselSimLib/IDynamics.h"
+#include "VesselSimLib/IController.h"
 #include "VesselSimLib/DynamicData.h"
 
 namespace vsl {
@@ -16,18 +17,31 @@ namespace vsl {
 		vsl::Vector getPosition() override;
 		vsl::Vector getRotation() override;
 
-		// Dynamics
+		// DYNAMICS
 		void setDynamics(IDynamics& _dynamics);
-		std::auto_ptr<IDynamics> m_dynamics;
+
+		// CONTROLLER
+		void setController(IController& _controller);
+
+		// Engine 
+		void setEngineOrder(int _order) override;
+		int getEngineOrder() override;
+
+		int getMinEngineOrder() override;
+		int getMaxEngineOrder() override;
+
+		int getRequestedThrustPower() override;
+		int getCurrentThrustPower() override;
 
 		// Rudder
-		void setRudderDirection(int _dir) override;
-		int rudder_input_dir = 0;
+		void setRudderAngle(float _degrees) override;
+		float getRequestedRudderAngle() override;
+		float getCurrentRudderAngle() override;
 
-		// Engine
-		void incrementEngineOrder() override;
-		void decrementEngineOrder() override;
-		std::vector<float> m_engine_orders; // order name : rpm
-		unsigned int m_engine_order_idx;
+		float getMaxRudderAngle() override;
+
+	private:
+		std::auto_ptr<IDynamics> m_dynamics;
+		std::auto_ptr<IController> m_controller;
 	};
 }

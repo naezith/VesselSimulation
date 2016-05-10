@@ -1,6 +1,6 @@
 #include "VesselSimulation.h"
 #include "Stepper.h"
-#include "Runtime/Core/Public/GenericPlatform/GenericPlatformMath.h"
+#include <cmath>
 
 vsl::Stepper::Stepper() : m_current(0), m_requested(0), m_vel(0) { }
 
@@ -28,4 +28,4 @@ void vsl::Stepper::setRequested(float _requested) { m_requested = _requested; }
 
 void vsl::Stepper::reset(float _value) { m_current = _value; }
 
-void vsl::Stepper::setSpeed(float _speed) { m_vel = FMath::Abs(_speed); }
+void vsl::Stepper::setSpeed(float _speed) { m_vel = std::abs(_speed); }

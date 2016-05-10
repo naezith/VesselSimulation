@@ -7,7 +7,7 @@
 namespace vsl {
 	class VESSELSIMULATION_API LowFidelityDynamics : public IDynamics {
 	public:
-		virtual void update(DynamicData& _dyn, float _dt);
+		virtual void step(DynamicData& _dyn, float _dt);
 	};
 }
 #endif // LOWFIDELITYDYNAMICS_H

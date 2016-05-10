@@ -3,6 +3,8 @@
 #include "VesselSimulation.h"
 #include "Vessel.h"
 #include "VesselSimLib/Ship.h"
+#include <algorithm>
+
 #include "Runtime/Core/Public/Containers/UnrealString.h"
 
 // Sets default values
@@ -41,11 +43,12 @@ void AVessel::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	
 	// Send inputs
-	m_ship->setRudderDirection(rudder_input_dir);
+	if (rudder_input_dir != 0) {
+		m_ship->setRudderAngle(std::max(std::min(m_ship->getRequestedRudderAngle() + rudder_input_dir * 20.0f * DeltaTime, m_ship->getMaxRudderAngle()), -m_ship->getMaxRudderAngle()));
+	}
 
 	if (engine_input != 0) {
-		if (engine_input == 1) m_ship->incrementEngineOrder();
-		else if (engine_input == -1) m_ship->decrementEngineOrder();
+		m_ship->setEngineOrder(m_ship->getEngineOrder() + engine_input);
 		engine_input = 0;
 	}
 

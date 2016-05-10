@@ -1,10 +1,8 @@
 #include "VesselSimulation.h"
 #include "Utility.h"
 
-using vsl::Vector;
-
-Vector vsl::Math::rotate(const Vector& loc, const Vector& eul) {
-	Vector global;
+vsl::Vector vsl::Math::rotate(const vsl::Vector& loc, const vsl::Vector& eul) {
+	vsl::Vector global;
 
 	float phi = eul.x*DEG2RAD;
 	float theta = eul.y*DEG2RAD;
@@ -29,20 +27,20 @@ int vsl::Math::sign(float a) {
 	return (a > 0) ? 1 : ((a < 0) ? -1 : 0);
 }
 
-Vector::Vector() : x(0), y(0), z(0) { }
+vsl::Vector::Vector() : x(0), y(0), z(0) { }
 
-Vector::Vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z) { }
+vsl::Vector::Vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z) { }
 
-Vector operator -(const Vector& right) {
-	return Vector(-right.x, -right.y, -right.z);
+vsl::Vector operator -(const vsl::Vector& right) {
+	return vsl::Vector(-right.x, -right.y, -right.z);
 }
 
-Vector::Vector(const Vector& vector) :
-	x(vector.x),
-	y(vector.y),
-	z(vector.z) { }
+vsl::Vector::Vector(const vsl::Vector& vec) :
+	x(vec.x),
+	y(vec.y),
+	z(vec.z) { }
 
-Vector& operator +=(Vector& left, const Vector& right) {
+vsl::Vector& operator +=(vsl::Vector& left, const vsl::Vector& right) {
 	left.x += right.x;
 	left.y += right.y;
 	left.z += right.z;
@@ -50,7 +48,7 @@ Vector& operator +=(Vector& left, const Vector& right) {
 	return left;
 }
 
-Vector& operator -=(Vector& left, const Vector& right) {
+vsl::Vector& operator -=(vsl::Vector& left, const vsl::Vector& right) {
 	left.x -= right.x;
 	left.y -= right.y;
 	left.z -= right.z;
@@ -58,23 +56,23 @@ Vector& operator -=(Vector& left, const Vector& right) {
 	return left;
 }
 
-Vector operator +(const Vector& left, const Vector& right) {
-	return Vector(left.x + right.x, left.y + right.y, left.z + right.z);
+vsl::Vector operator +(const vsl::Vector& left, const vsl::Vector& right) {
+	return vsl::Vector(left.x + right.x, left.y + right.y, left.z + right.z);
 }
 
-Vector operator -(const Vector& left, const Vector& right) {
-	return Vector(left.x - right.x, left.y - right.y, left.z - right.z);
+vsl::Vector operator -(const vsl::Vector& left, const vsl::Vector& right) {
+	return vsl::Vector(left.x - right.x, left.y - right.y, left.z - right.z);
 }
 
-Vector operator *(const Vector& left, float right) {
-	return Vector(left.x * right, left.y * right, left.z * right);
+vsl::Vector operator *(const vsl::Vector& left, float right) {
+	return vsl::Vector(left.x * right, left.y * right, left.z * right);
 }
 
-Vector operator *(float left, const Vector& right) {
-	return Vector(right.x * left, right.y * left, right.z * left);
+vsl::Vector operator *(float left, const vsl::Vector& right) {
+	return vsl::Vector(right.x * left, right.y * left, right.z * left);
 }
 
-Vector& operator *=(Vector& left, float right) {
+vsl::Vector& operator *=(vsl::Vector& left, float right) {
 	left.x *= right;
 	left.y *= right;
 	left.z *= right;
@@ -82,11 +80,11 @@ Vector& operator *=(Vector& left, float right) {
 	return left;
 }
 
-Vector operator /(const Vector& left, float right) {
-	return Vector(left.x / right, left.y / right, left.z / right);
+vsl::Vector operator /(const vsl::Vector& left, float right) {
+	return vsl::Vector(left.x / right, left.y / right, left.z / right);
 }
 
-Vector& operator /=(Vector& left, float right) {
+vsl::Vector& operator /=(vsl::Vector& left, float right) {
 	left.x /= right;
 	left.y /= right;
 	left.z /= right;
@@ -94,10 +92,10 @@ Vector& operator /=(Vector& left, float right) {
 	return left;
 }
 
-bool operator ==(const Vector& left, const Vector& right) {
+bool operator ==(const vsl::Vector& left, const vsl::Vector& right) {
 	return (left.x == right.x) && (left.y == right.y) && (left.z == right.z);
 }
 
-bool operator !=(const Vector& left, const Vector& right) {
+bool operator !=(const vsl::Vector& left, const vsl::Vector& right) {
 	return (left.x != right.x) || (left.y != right.y) || (left.z != right.z);
 }
