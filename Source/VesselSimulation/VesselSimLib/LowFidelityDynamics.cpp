@@ -50,4 +50,7 @@ void vsl::LowFidelityDynamics::step(vsl::DynamicData& _dyn, float _dt) {
 
 	// Convert local velocity to global velocity and add the environmental velocity
 	pos += (vsl::Math::rotate(vel, rot) + global_vel) * _dt;
+
+	// BAD FIX FOR GOING UP & DOWN
+	pos.z = 2000.0f;
 }

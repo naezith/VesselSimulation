@@ -44,12 +44,7 @@ void AVessel::Tick(float DeltaTime) {
 	
 	// Send inputs
 	if (rudder_input_dir != 0) {
-		m_ship->setRudderAngle(std::max(std::min(m_ship->getRequestedRudderAngle() + rudder_input_dir * 20.0f * DeltaTime, m_ship->getMaxRudderAngle()), -m_ship->getMaxRudderAngle()));
-	}
-
-	if (engine_input != 0) {
-		m_ship->setEngineOrder(m_ship->getEngineOrder() + engine_input);
-		engine_input = 0;
+		m_ship->setRudderAngle(std::max(std::min(m_ship->getRequestedRudderAngle() + rudder_input_dir * 100.0f * DeltaTime, m_ship->getMaxRudderAngle()), -m_ship->getMaxRudderAngle()));
 	}
 
 	// Update
@@ -81,5 +76,5 @@ void AVessel::RudderInputLeft() { rudder_input_dir = -1; }
 void AVessel::RudderInputCancelLeft() { if (rudder_input_dir == -1) rudder_input_dir = 0; }
 void AVessel::RudderInputRight() { rudder_input_dir = 1; }
 void AVessel::RudderInputCancelRight() { if (rudder_input_dir == 1) rudder_input_dir = 0; }
-void AVessel::EngineUp() { engine_input = 1; }
-void AVessel::EngineDown() { engine_input = -1; }
+void AVessel::EngineUp() { m_ship->setEngineOrder(m_ship->getEngineOrder() + 1); }
+void AVessel::EngineDown() { m_ship->setEngineOrder(m_ship->getEngineOrder() - 1); }

@@ -35,7 +35,6 @@ public:
 	void RudderInputRight();
 	void RudderInputCancelRight();
 
-	int engine_input = 0;
 	void EngineUp();
 	void EngineDown();
 };

@@ -11,13 +11,18 @@ vsl::DynamicData::DynamicData(vsl::Vector _pos, vsl::Vector _rot) {
 }
 
 void vsl::DynamicData::init(vsl::Vector _pos, vsl::Vector _rot) {
+	MAX_RUDDER_ANGLE = 35.0f;
+
+	thrustPower.init(0.0f, 50.0f);
+	rudderAngle.init(0.0f, MAX_RUDDER_ANGLE*4);
+
 	m_pos = _pos;
 	m_rot = _rot;
 	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = vsl::Vector(0, 0, 0);
 
-	MAX_RUDDER_ANGLE = 35.0f;
 
 	// Initialize engine orders
+	m_engine_orders.clear();
 	m_engine_orders.push_back(-45);
 	m_engine_orders.push_back(-35);
 	m_engine_orders.push_back(-25);
@@ -31,5 +36,6 @@ void vsl::DynamicData::init(vsl::Vector _pos, vsl::Vector _rot) {
 	// Find the 0's index, which is "stop"
 	int idx = 0;
 	while (m_engine_orders[idx] != 0) ++idx;
-	curr_engine_order = idx_of_stop = idx;
+	idx_of_stop = idx;
+	curr_engine_order = 0;
 }

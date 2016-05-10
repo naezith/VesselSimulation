@@ -4,9 +4,6 @@
 #include "VesselSimLib/ShipController.h"
 
 vsl::Ship::Ship() {
-	thrustPower.init(0.0f, 50.0f);
-	rudderAngle.init(0.0f, 10.0f);
-
 	init(vsl::Vector::Zero(), vsl::Vector::Zero());
 
 	setDynamics( *(new LowFidelityDynamics()) );
