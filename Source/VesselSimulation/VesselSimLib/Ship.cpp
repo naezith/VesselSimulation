@@ -65,7 +65,7 @@ void vsl::Ship::update(float _dt) {
 // CONTROLLER LINK
 // Engine 
 void vsl::Ship::setEngineOrder(int _order) {
-	m_controller->setRudderAngle(_order);
+	m_controller->setEngineOrder(_order);
 }
 
 int vsl::Ship::getEngineOrder() {

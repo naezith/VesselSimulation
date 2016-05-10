@@ -31,5 +31,5 @@ void vsl::DynamicData::init(vsl::Vector _pos, vsl::Vector _rot) {
 	// Find the 0's index, which is "stop"
 	int idx = 0;
 	while (m_engine_orders[idx] != 0) ++idx;
-	idx_of_stop = idx;
+	curr_engine_order = idx_of_stop = idx;
 }
