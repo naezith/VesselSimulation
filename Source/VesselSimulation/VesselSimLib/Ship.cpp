@@ -7,8 +7,14 @@ vsl::Ship::Ship() {
 	thrustPower.init(0.0f, 50.0f);
 	rudderAngle.init(0.0f, 10.0f);
 
+	init(vsl::Vector::Zero(), vsl::Vector::Zero());
+
 	setDynamics( *(new LowFidelityDynamics()) );
 	setController( *(new ShipController(this)) );
+}
+
+void vsl::Ship::init(vsl::Vector _pos, vsl::Vector _rot) {
+	DynamicData::init(_pos, _rot);
 }
 
 void vsl::Ship::setDynamics(IDynamics& _dynamics) {
@@ -17,12 +23,6 @@ void vsl::Ship::setDynamics(IDynamics& _dynamics) {
 
 void vsl::Ship::setController(IController& _controller) {
 	m_controller.reset(&_controller);
-}
-
-void vsl::Ship::init(vsl::Vector _pos, vsl::Vector _rot) {
-	m_pos = _pos;
-	m_rot = _rot;
-	m_ang_accel = m_ang_vel = m_accel = m_vel = m_global_vel = vsl::Vector(0, 0, 0);
 }
 
 vsl::Vector vsl::Ship::getPosition() {
