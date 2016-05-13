@@ -33,8 +33,8 @@ vsl::Vector vsl::Ship::getRotation() {
 void vsl::Ship::update(float _dt) {
 	if (m_dynamics.get()) m_dynamics->step(*this, _dt);
 
-
 	// LOGS
+	/*
 	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Rudder Angle: ") + FString::SanitizeFloat(getRequestedRudderAngle()) +
 		FString("  |  ") + FString::SanitizeFloat(getCurrentRudderAngle()));
 	GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Red, FString("Thrust Power: ") + FString::SanitizeFloat(getRequestedThrustPower()) +
@@ -54,7 +54,7 @@ void vsl::Ship::update(float _dt) {
 		FString(", ") + FString::SanitizeFloat(m_ang_accel.z));
 	GEngine->AddOnScreenDebugMessage(7, 5.f, FColor::Red, FString("Angular Velocity: ") + FString::SanitizeFloat(m_ang_vel.x) +
 		FString(", ") + FString::SanitizeFloat(m_ang_vel.y) +
-		FString(", ") + FString::SanitizeFloat(m_ang_vel.z));
+		FString(", ") + FString::SanitizeFloat(m_ang_vel.z));*/
 }
 
 
