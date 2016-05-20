@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "VesselSimulation/VesselActor.h"
 #include "VesselSimLib/VesselSim.h"
+#include "VesselSimulation/UEPlayer.h"
 #include "VesselSpawner.generated.h"
 
 UCLASS()
@@ -33,15 +34,14 @@ public:
 
 
 
-	// Unreal Engine Input functions
-	int rudder_input_dir = 0;
-	int engine_input_dir = 0;
+	// Unreal Engine Player and Input functions
+	UEPlayer ue_player;
+	vsl::AIPlayer ai_player;
 
 	void RudderInputLeft();
 	void RudderInputCancelLeft();
 	void RudderInputRight();
 	void RudderInputCancelRight();
-
 	void EngineUp();
 	void EngineDown();
 };

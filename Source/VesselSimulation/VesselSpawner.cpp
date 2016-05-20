@@ -2,7 +2,7 @@
 
 #include "VesselSimulation.h"
 #include "VesselSpawner.h"
-#include <algorithm>
+#include "VesselSimLib/AIPlayer.h"
 
 // Sets default values
 AVesselSpawner::AVesselSpawner() {
@@ -48,6 +48,10 @@ void AVesselSpawner::BeginPlay() {
 					FRotator rot = new_actor->GetActorRotation();
 					FVector loc = new_actor->GetActorLocation();
 					new_vessel->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
+					
+					// Set the player
+					if(i < 3) new_vessel->setPlayer(&ai_player);
+					else new_vessel->setPlayer(&ue_player);
 
 					// Change position and rotation for new ships
 					start_pos.Y += 10000.0f;
@@ -61,24 +65,6 @@ void AVesselSpawner::BeginPlay() {
 // Called every frame
 void AVesselSpawner::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
-	
-	// Send rudder input to all
-	if (rudder_input_dir != 0) {
-		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
-			vsl::IShip* sh = vsl_sim.getVessel(it->second->getId());
-			sh->setRudderAngle(std::max(std::min(sh->getRequestedRudderAngle() + rudder_input_dir * 100.0f * DeltaTime, sh->getMaxRudderAngle()), -sh->getMaxRudderAngle()));
-		}
-	}
-
-	// Send engine input to all
-	if (engine_input_dir != 0) {
-		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
-			vsl::IShip* sh = vsl_sim.getVessel(it->second->getId());
-			sh->setEngineOrder(sh->getEngineOrder() + engine_input_dir);
-		}
-		engine_input_dir = 0;
-	}
-
 
 	// Update all real vessels
 	vsl_sim.update(DeltaTime);
@@ -96,6 +82,9 @@ void AVesselSpawner::Tick( float DeltaTime ) {
 		vsl::Vector euler_rot = sh->getRotation();
 		act->SetActorRotation(FRotator(euler_rot.y, euler_rot.z, euler_rot.x));
 	}
+
+	// Engine Input is applied to all vessels controlled by UEPlayer, clear the input.
+	ue_player.engine_input_dir = 0;
 }
 
 // Called to bind functionality to input
@@ -111,9 +100,33 @@ void AVesselSpawner::SetupPlayerInputComponent(class UInputComponent* InputCompo
 	InputComponent->BindAction("RudderInputLeft", IE_Released, this, &AVesselSpawner::RudderInputCancelLeft);
 }
 
-void AVesselSpawner::RudderInputLeft() { rudder_input_dir = -1; }
-void AVesselSpawner::RudderInputCancelLeft() { if (rudder_input_dir == -1) rudder_input_dir = 0; }
-void AVesselSpawner::RudderInputRight() { rudder_input_dir = 1; }
-void AVesselSpawner::RudderInputCancelRight() { if (rudder_input_dir == 1) rudder_input_dir = 0; }
-void AVesselSpawner::EngineUp() { engine_input_dir = 1; }
-void AVesselSpawner::EngineDown() { engine_input_dir = -1; }
+void AVesselSpawner::RudderInputLeft() { ue_player.rudder_input_dir = -1; }
+void AVesselSpawner::RudderInputCancelLeft() { if (ue_player.rudder_input_dir == -1) ue_player.rudder_input_dir = 0; }
+void AVesselSpawner::RudderInputRight() { ue_player.rudder_input_dir = 1; }
+void AVesselSpawner::RudderInputCancelRight() { if (ue_player.rudder_input_dir == 1) ue_player.rudder_input_dir = 0; }
+void AVesselSpawner::EngineUp() { ue_player.engine_input_dir = 1; }
+void AVesselSpawner::EngineDown() { ue_player.engine_input_dir = -1; }
+
+
+// LOGGING A VESSEL 
+/*
+GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Rudder Angle: ") + FString::SanitizeFloat(getRequestedRudderAngle()) +
+FString("  |  ") + FString::SanitizeFloat(getCurrentRudderAngle()));
+GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Red, FString("Thrust Power: ") + FString::SanitizeFloat(getRequestedThrustPower()) +
+FString("  |  ") + FString::SanitizeFloat(getCurrentThrustPower()));
+
+GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Position: ") + FString::SanitizeFloat(m_pos.x) +
+FString(", ") + FString::SanitizeFloat(m_pos.y) +
+FString(", ") + FString::SanitizeFloat(m_pos.z));
+GEngine->AddOnScreenDebugMessage(4, 5.f, FColor::Red, FString("Velocity: ") + FString::SanitizeFloat(m_vel.x) +
+FString(", ") + FString::SanitizeFloat(m_vel.y) +
+FString(", ") + FString::SanitizeFloat(m_vel.z));
+GEngine->AddOnScreenDebugMessage(5, 5.f, FColor::Red, FString("Acceleration: ") + FString::SanitizeFloat(m_accel.x) +
+FString(", ") + FString::SanitizeFloat(m_accel.y) +
+FString(", ") + FString::SanitizeFloat(m_accel.z));
+GEngine->AddOnScreenDebugMessage(6, 5.f, FColor::Red, FString("Angular Acceleration: ") + FString::SanitizeFloat(m_ang_accel.x) +
+FString(", ") + FString::SanitizeFloat(m_ang_accel.y) +
+FString(", ") + FString::SanitizeFloat(m_ang_accel.z));
+GEngine->AddOnScreenDebugMessage(7, 5.f, FColor::Red, FString("Angular Velocity: ") + FString::SanitizeFloat(m_ang_vel.x) +
+FString(", ") + FString::SanitizeFloat(m_ang_vel.y) +
+FString(", ") + FString::SanitizeFloat(m_ang_vel.z));*/
