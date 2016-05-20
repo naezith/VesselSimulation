@@ -5,7 +5,7 @@
 #include "GameFramework/Pawn.h"
 #include <unordered_map>
 #include "VesselSimulation/VesselActor.h"
-#include "VesselSimLib/VesselManager.h"
+#include "VesselSimLib/VesselSim.h"
 #include "VesselSpawner.generated.h"
 
 UCLASS()
@@ -27,9 +27,11 @@ public:
 
 
 
-	// Vessels
+	// Vessel Simulation
 	std::unordered_map<int, AVesselActor*> m_actors;
-	vsl::VesselManager vsl_manager;
+	vsl::VesselSim vsl_sim;
+
+
 
 	// Unreal Engine Input functions
 	int rudder_input_dir = 0;

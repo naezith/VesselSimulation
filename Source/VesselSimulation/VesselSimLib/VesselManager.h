@@ -9,8 +9,8 @@ namespace vsl {
 		VesselManager();
 		~VesselManager();
 
-		void init();
-		void update(float _dt);
+		virtual void init();
+		virtual void update(float _dt);
 
 		IShip* requestNewVessel(std::string type);
 		IShip* getVessel(int id);
@@ -19,6 +19,6 @@ namespace vsl {
 
 	private:
 		std::unordered_map<int, IShip*> m_vessels;
-		int available_id = 0;
+		int available_id;
 	};
 }

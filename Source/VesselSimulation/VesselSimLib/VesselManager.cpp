@@ -3,11 +3,11 @@
 #include "VesselSimLib/ShipBuilding.h"
 
 vsl::VesselManager::VesselManager() {
-	init();
 }
 
 void vsl::VesselManager::init() {
 	m_vessels.clear();
+	available_id = 1;
 }
 
 void vsl::VesselManager::deleteVessel(int id) {
@@ -16,16 +16,22 @@ void vsl::VesselManager::deleteVessel(int id) {
 }
 
 vsl::IShip* vsl::VesselManager::getVessel(int id) {
-	return m_vessels[id];
+	auto it = m_vessels.find(id);
+	if (it != m_vessels.end()) return it->second;
+	return nullptr;
 }
 
 vsl::IShip* vsl::VesselManager::requestNewVessel(std::string type) {
 	vsl::VesselBuilding* vessel_maker = new vsl::ShipBuilding();
 
-	vsl::IShip* new_vessel = vessel_maker->orderVessel("Basic Ship");
+	vsl::IShip* new_vessel = vessel_maker->orderVessel(type);
 	delete vessel_maker; 
 
-	m_vessels[available_id++] = new_vessel; // Add to list
+	// Give it an ID
+	int id = available_id++;
+	new_vessel->setId(id);
+	m_vessels[id] = new_vessel; // Add to map
+
 	return new_vessel; // Deliver the vessel
 }
 
@@ -41,11 +47,11 @@ void vsl::VesselManager::update(float _dt) {
 
 void vsl::VesselManager::clearAll() {
 	for (auto it = m_vessels.begin(); it != m_vessels.end(); ++it) {
-		delete it->second;
+		if(it->second != nullptr) delete it->second;
 	}
 
 	m_vessels.clear();
-	available_id = 0;
+	available_id = 1;
 }
 
 vsl::VesselManager::~VesselManager() {

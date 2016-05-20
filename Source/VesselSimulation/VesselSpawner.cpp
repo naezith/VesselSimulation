@@ -4,7 +4,6 @@
 #include "VesselSpawner.h"
 #include <algorithm>
 
-
 // Sets default values
 AVesselSpawner::AVesselSpawner() {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -20,7 +19,7 @@ void AVesselSpawner::BeginPlay() {
 
 	// Clear all the actors and real vessels
 	m_actors.clear();
-	vsl_manager.clearAll();
+	vsl_sim.clearAll();
 
 	// First position and rotation
 	FVector start_pos(0, 0, 2000);
@@ -34,15 +33,16 @@ void AVesselSpawner::BeginPlay() {
 		SpawnParams.Instigator = Instigator;
 		for (auto i = 0; i < 4; ++i) {
 			// Request a new real vessel
-			vsl::IShip* new_vessel = vsl_manager.requestNewVessel("Basic Ship");
+			vsl::IShip* new_vessel = vsl_sim.requestNewVessel("Basic Ship");
 
 			// If delivered,
 			if(new_vessel){
+				int id = new_vessel->getId();
 				// Create an actor for the real vessel
 				AVesselActor* new_actor = World->SpawnActor<AVesselActor>(start_pos, start_rot, SpawnParams);
 				if (new_actor) {
-					new_actor->setId(new_vessel->getId()); // Match real vessel and actor Id's
-					m_actors[new_actor->getId()] = new_actor; // Map the id : actor
+					new_actor->setId(id); // Match real vessel and actor Id's
+					m_actors[id] = new_actor; // Map the id : actor
 
 					// Initialize the real vessel
 					FRotator rot = new_actor->GetActorRotation();
@@ -61,11 +61,11 @@ void AVesselSpawner::BeginPlay() {
 // Called every frame
 void AVesselSpawner::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
-
+	
 	// Send rudder input to all
 	if (rudder_input_dir != 0) {
 		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
-			vsl::IShip* sh = vsl_manager.getVessel(it->second->getId());
+			vsl::IShip* sh = vsl_sim.getVessel(it->second->getId());
 			sh->setRudderAngle(std::max(std::min(sh->getRequestedRudderAngle() + rudder_input_dir * 100.0f * DeltaTime, sh->getMaxRudderAngle()), -sh->getMaxRudderAngle()));
 		}
 	}
@@ -73,7 +73,7 @@ void AVesselSpawner::Tick( float DeltaTime ) {
 	// Send engine input to all
 	if (engine_input_dir != 0) {
 		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
-			vsl::IShip* sh = vsl_manager.getVessel(it->second->getId());
+			vsl::IShip* sh = vsl_sim.getVessel(it->second->getId());
 			sh->setEngineOrder(sh->getEngineOrder() + engine_input_dir);
 		}
 		engine_input_dir = 0;
@@ -81,12 +81,12 @@ void AVesselSpawner::Tick( float DeltaTime ) {
 
 
 	// Update all real vessels
-	vsl_manager.update(DeltaTime);
+	vsl_sim.update(DeltaTime);
 
 	// Transfer vessel data to actors
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
 		AVesselActor* act = it->second;
-		vsl::IShip* sh = vsl_manager.getVessel(act->getId());
+		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
 
 		// Get position of the actor
 		vsl::Vector pos = sh->getPosition();
