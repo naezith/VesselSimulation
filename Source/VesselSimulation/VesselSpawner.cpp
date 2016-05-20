@@ -2,7 +2,6 @@
 
 #include "VesselSimulation.h"
 #include "VesselSpawner.h"
-#include "VesselSimLib/AIPlayer.h"
 
 // Sets default values
 AVesselSpawner::AVesselSpawner() {
@@ -17,17 +16,24 @@ AVesselSpawner::AVesselSpawner() {
 void AVesselSpawner::BeginPlay() {
 	Super::BeginPlay();
 
-	// Clear all the actors and real vessels
-	m_actors.clear();
-	vsl_sim.clearAll();
-
-	// First position and rotation
-	FVector start_pos(0, 0, 2000);
-	FRotator start_rot(0, 0, 0);
-
-	// Spawn vessels
 	UWorld* const World = GetWorld();
 	if (World) {
+		// Enable cursor
+		auto controller = World->GetFirstPlayerController();
+		controller->bShowMouseCursor = true;
+		controller->bEnableClickEvents = true;
+		controller->bEnableMouseOverEvents = true;
+
+
+		// Clear all the actors and real vessels
+		m_actors.clear();
+		vsl_sim.clearAll();
+
+		// First position and rotation
+		FVector start_pos(0, 0, 2000);
+		FRotator start_rot(0, 0, 0);
+
+		// Spawn vessels
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = Instigator;
@@ -65,6 +71,32 @@ void AVesselSpawner::BeginPlay() {
 // Called every frame
 void AVesselSpawner::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
+
+	// Get mouse input
+	FVector mouseLocation, mouseDirection;
+	GetWorld()->GetFirstPlayerController()->DeprojectMousePositionToWorld(mouseLocation, mouseDirection);
+
+
+	GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Cursor Position: ") + FString::SanitizeFloat(mouseLocation.X) +
+																FString(", ") + FString::SanitizeFloat(mouseLocation.Y) +
+																FString(", ") + FString::SanitizeFloat(mouseLocation.Z));
+
+
+	// Temporary code - Refresh the waypoint as cursor
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+		AVesselActor* act = it->second;
+		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
+
+		sh->clearWaypoints();
+		sh->addWaypoint(vsl::Vector(mouseLocation.X, mouseLocation.Y, 0));
+	}
+
+
+
+
+
+
+
 
 	// Update all real vessels
 	vsl_sim.update(DeltaTime);

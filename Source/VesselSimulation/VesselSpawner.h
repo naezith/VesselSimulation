@@ -7,6 +7,7 @@
 #include "VesselSimulation/VesselActor.h"
 #include "VesselSimLib/VesselSim.h"
 #include "VesselSimulation/UEPlayer.h"
+#include "VesselSimLib/AIPlayer.h"
 #include "VesselSpawner.generated.h"
 
 UCLASS()
