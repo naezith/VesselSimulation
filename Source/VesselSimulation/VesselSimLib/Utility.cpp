@@ -1,32 +1,7 @@
 #include "VesselSimulation.h"
 #include "VesselSimLib/Utility.h"
 
-vsl::Vector vsl::Math::rotate(const vsl::Vector& loc, const vsl::Vector& eul) {
-	vsl::Vector global;
-
-	float phi = eul.x*DEG2RAD;
-	float theta = eul.y*DEG2RAD;
-	float psi = eul.z*DEG2RAD;
-
-	global.x = +loc.x * cos(psi) * cos(theta)
-			 + loc.y * (cos(psi) * sin(theta) * sin(phi) - sin(psi) * cos(phi))
-			 + loc.z * (cos(psi) * sin(theta) * cos(phi) + sin(psi) * sin(phi));
-
-	global.y = +loc.x * cos(theta) * sin(psi)
-			 + loc.y * (sin(phi) * sin(theta) * sin(psi) + cos(phi) * cos(psi))
-			 + loc.z * (cos(phi) * sin(theta) * sin(psi) - sin(phi) * cos(psi));
-
-	global.z = -loc.x * sin(theta)
-			 + loc.y * sin(phi) * cos(theta)
-			 + loc.z * cos(phi) * cos(theta);
-
-	return global;
-}
-
-int vsl::Math::sign(float a) {
-	return (a > 0) ? 1 : ((a < 0) ? -1 : 0);
-}
-
+// VECTOR
 vsl::Vector::Vector() : x(0), y(0), z(0) { }
 
 vsl::Vector::Vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z) { }
@@ -100,4 +75,55 @@ bool operator ==(const vsl::Vector& left, const vsl::Vector& right) {
 
 bool operator !=(const vsl::Vector& left, const vsl::Vector& right) {
 	return (left.x != right.x) || (left.y != right.y) || (left.z != right.z);
+}
+
+float vsl::Vector::magnitude() {
+	return sqrt(x*x + y*y + z*z);
+}
+
+
+
+float limitAngleRange(float deg) {
+	while (deg < 0.0f) deg += 360.0f;
+	while (deg >= 360.0f) deg -= 360.0f;
+	return deg;
+}
+
+float vsl::Vector::toAngle() {
+	float deg = atan2(y, x)*vsl::Math::RAD2DEG;
+	return limitAngleRange(deg);
+}
+
+// MATH
+vsl::Vector vsl::Math::rotate(const vsl::Vector& loc, const vsl::Vector& eul) {
+	vsl::Vector global;
+
+	float phi = eul.x*DEG2RAD;
+	float theta = eul.y*DEG2RAD;
+	float psi = eul.z*DEG2RAD;
+
+	global.x = +loc.x * cos(psi) * cos(theta)
+		+ loc.y * (cos(psi) * sin(theta) * sin(phi) - sin(psi) * cos(phi))
+		+ loc.z * (cos(psi) * sin(theta) * cos(phi) + sin(psi) * sin(phi));
+
+	global.y = +loc.x * cos(theta) * sin(psi)
+		+ loc.y * (sin(phi) * sin(theta) * sin(psi) + cos(phi) * cos(psi))
+		+ loc.z * (cos(phi) * sin(theta) * sin(psi) - sin(phi) * cos(psi));
+
+	global.z = -loc.x * sin(theta)
+		+ loc.y * sin(phi) * cos(theta)
+		+ loc.z * cos(phi) * cos(theta);
+
+	return global;
+}
+
+int vsl::Math::sign(float a) {
+	return (a > 0) ? 1 : ((a < 0) ? -1 : 0);
+}
+
+float vsl::Math::angleDifference(float a1, float a2) {
+	float difference = a2 - a1;
+	while (difference < -180.0f) difference += 360.0f;
+	while (difference > 180.0f) difference -= 360.0f;
+	return difference;
 }
