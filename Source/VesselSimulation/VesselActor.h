@@ -14,7 +14,6 @@ class VESSELSIMULATION_API AVesselActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AVesselActor();
-	~AVesselActor();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -22,5 +21,9 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	vsl::IShip* m_ship = nullptr;
+	int getId();
+	void setId(int _id);
+
+private:
+	int id;
 };

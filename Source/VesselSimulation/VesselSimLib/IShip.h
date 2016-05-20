@@ -14,5 +14,11 @@ namespace vsl {
 		virtual void update(float _dt) = 0;
 		virtual vsl::Vector getPosition() = 0;
 		virtual vsl::Vector getRotation() = 0;
+		
+		int getId();
+		void setId(int _id);
+
+	private:
+		int id;
 	};
 }

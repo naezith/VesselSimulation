@@ -18,8 +18,11 @@ AVesselSpawner::AVesselSpawner() {
 void AVesselSpawner::BeginPlay() {
 	Super::BeginPlay();
 
-	vessels.clear();
+	// Clear all the actors and real vessels
+	m_actors.clear();
+	vsl_manager.clearAll();
 
+	// First position and rotation
 	FVector start_pos(0, 0, 2000);
 	FRotator start_rot(0, 0, 0);
 
@@ -30,11 +33,26 @@ void AVesselSpawner::BeginPlay() {
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = Instigator;
 		for (auto i = 0; i < 4; ++i) {
-			AVesselActor* newVessel = World->SpawnActor<AVesselActor>(start_pos, start_rot, SpawnParams);
-			if (newVessel) {
-				vessels.push_back(newVessel);
-				start_pos.Y += 10000.0f;
-				start_rot.Yaw += 15.0f;
+			// Request a new real vessel
+			vsl::IShip* new_vessel = vsl_manager.requestNewVessel("Basic Ship");
+
+			// If delivered,
+			if(new_vessel){
+				// Create an actor for the real vessel
+				AVesselActor* new_actor = World->SpawnActor<AVesselActor>(start_pos, start_rot, SpawnParams);
+				if (new_actor) {
+					new_actor->setId(new_vessel->getId()); // Match real vessel and actor Id's
+					m_actors[new_actor->getId()] = new_actor; // Map the id : actor
+
+					// Initialize the real vessel
+					FRotator rot = new_actor->GetActorRotation();
+					FVector loc = new_actor->GetActorLocation();
+					new_vessel->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
+
+					// Change position and rotation for new ships
+					start_pos.Y += 10000.0f;
+					start_rot.Yaw += 15.0f;
+				}
 			}
 		}
 	}
@@ -44,31 +62,39 @@ void AVesselSpawner::BeginPlay() {
 void AVesselSpawner::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
 
-	// Send inputs to all
+	// Send rudder input to all
 	if (rudder_input_dir != 0) {
-		for(auto* v : vessels)
-			v->m_ship->setRudderAngle(std::max(std::min(v->m_ship->getRequestedRudderAngle() + rudder_input_dir * 100.0f * DeltaTime, v->m_ship->getMaxRudderAngle()), -v->m_ship->getMaxRudderAngle()));
+		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+			vsl::IShip* sh = vsl_manager.getVessel(it->second->getId());
+			sh->setRudderAngle(std::max(std::min(sh->getRequestedRudderAngle() + rudder_input_dir * 100.0f * DeltaTime, sh->getMaxRudderAngle()), -sh->getMaxRudderAngle()));
+		}
 	}
 
+	// Send engine input to all
 	if (engine_input_dir != 0) {
-		for (auto* v : vessels) 
-			v->m_ship->setEngineOrder(v->m_ship->getEngineOrder() + engine_input_dir);
-
+		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+			vsl::IShip* sh = vsl_manager.getVessel(it->second->getId());
+			sh->setEngineOrder(sh->getEngineOrder() + engine_input_dir);
+		}
 		engine_input_dir = 0;
 	}
 
-	// Update all
-	for (auto* v : vessels){
-		// Update
-		v->m_ship->update(DeltaTime);
 
-		// Get position
-		vsl::Vector pos = v->m_ship->getPosition();
-		v->SetActorLocation(FVector(pos.x, pos.y, pos.z));
+	// Update all real vessels
+	vsl_manager.update(DeltaTime);
 
-		// Get rotation
-		vsl::Vector euler_rot = v->m_ship->getRotation();
-		v->SetActorRotation(FRotator(euler_rot.y, euler_rot.z, euler_rot.x));
+	// Transfer vessel data to actors
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+		AVesselActor* act = it->second;
+		vsl::IShip* sh = vsl_manager.getVessel(act->getId());
+
+		// Get position of the actor
+		vsl::Vector pos = sh->getPosition();
+		act->SetActorLocation(FVector(pos.x, pos.y, pos.z));
+
+		// Get rotation of the actor
+		vsl::Vector euler_rot = sh->getRotation();
+		act->SetActorRotation(FRotator(euler_rot.y, euler_rot.z, euler_rot.x));
 	}
 }
 

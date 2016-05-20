@@ -3,13 +3,13 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-#include <vector>
+#include <unordered_map>
 #include "VesselSimulation/VesselActor.h"
+#include "VesselSimLib/VesselManager.h"
 #include "VesselSpawner.generated.h"
 
 UCLASS()
-class VESSELSIMULATION_API AVesselSpawner : public APawn
-{
+class VESSELSIMULATION_API AVesselSpawner : public APawn {
 	GENERATED_BODY()
 
 public:
@@ -26,11 +26,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 
-	std::vector<AVesselActor*> vessels;
+
+	// Vessels
+	std::unordered_map<int, AVesselActor*> m_actors;
+	vsl::VesselManager vsl_manager;
 
 	// Unreal Engine Input functions
 	int rudder_input_dir = 0;
 	int engine_input_dir = 0;
+
 	void RudderInputLeft();
 	void RudderInputCancelLeft();
 	void RudderInputRight();

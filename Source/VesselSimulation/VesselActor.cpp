@@ -28,25 +28,20 @@ AVesselActor::AVesselActor() {
 	}
 }
 
-AVesselActor::~AVesselActor() {
-	if (m_ship != nullptr) delete m_ship;
-}
-
-
 // Called when the game starts or when spawned
 void AVesselActor::BeginPlay() {
 	Super::BeginPlay();
-
-	if (m_ship == nullptr) {
-		m_ship = new vsl::Ship();
-
-		FRotator rot = GetActorRotation();
-		FVector loc = GetActorLocation();
-		m_ship->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
-	}
 }
 
 // Called every frame
 void AVesselActor::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
+}
+
+int AVesselActor::getId() {
+	return id;
+}
+
+void AVesselActor::setId(int _id) {
+	id = _id;
 }
