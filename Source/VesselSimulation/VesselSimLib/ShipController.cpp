@@ -39,7 +39,7 @@ int vsl::ShipController::getCurrentThrustPower() {
 
 // Rudder
 void vsl::ShipController::setRudderAngle(float _degrees) {
-	m_dyn->rudderAngle.setRequested(_degrees);
+	m_dyn->rudderAngle.setRequested(std::max(std::min(_degrees, getMaxRudderAngle()), -getMaxRudderAngle()));
 }
 
 float vsl::ShipController::getRequestedRudderAngle() {

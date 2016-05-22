@@ -13,9 +13,6 @@ void vsl::AIPlayer::init() {
 }
 
 void vsl::AIPlayer::control(vsl::IShip* _ship, float dt) {
-	_ship->setEngineOrder(1);
-	_ship->setRudderAngle(35);
-	
 	auto& wp_list = _ship->getWaypoints();
 	if (wp_list.empty()) return;
 

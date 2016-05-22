@@ -23,7 +23,7 @@ void AVesselSpawner::BeginPlay() {
 		controller->bShowMouseCursor = true;
 		controller->bEnableClickEvents = true;
 		controller->bEnableMouseOverEvents = true;
-
+		controller->HitResultTraceDistance = 10000000.0f;
 
 		// Clear all the actors and real vessels
 		m_actors.clear();
@@ -37,7 +37,7 @@ void AVesselSpawner::BeginPlay() {
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = Instigator;
-		for (auto i = 0; i < 2; ++i) {
+		for (auto i = 0; i < 4; ++i) {
 			// Request a new real vessel
 			vsl::IShip* new_vessel = vsl_sim.requestNewVessel("Basic Ship");
 
@@ -56,7 +56,7 @@ void AVesselSpawner::BeginPlay() {
 					new_vessel->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
 					
 					// Set the player
-					if(i < 1) new_vessel->setPlayer(&ai_player);
+					if(i < 3) new_vessel->setPlayer(&ai_player);
 					else new_vessel->setPlayer(&ue_player);
 
 					// Change position and rotation for new ships
@@ -73,22 +73,8 @@ void AVesselSpawner::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
 
 	// Get mouse input
-	FVector mouseLocation, mouseDirection;
-	GetWorld()->GetFirstPlayerController()->DeprojectMousePositionToWorld(mouseLocation, mouseDirection);
-
-	mouseLocation += mouseDirection * 12000.0f;
-	// SO WRONG!
-	GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Cursor Position: ") + FString::SanitizeFloat(mouseLocation.X) +
-																FString(", ") + FString::SanitizeFloat(mouseLocation.Y) +
-																FString(", ") + FString::SanitizeFloat(mouseLocation.Z));
-
-	vsl::Vector sh_pos = vsl_sim.getVessel(1)->getPosition();
-
-	GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Yellow, FString("Ship Position: ") + FString::SanitizeFloat(sh_pos.x) +
-		FString(", ") + FString::SanitizeFloat(sh_pos.y) +
-		FString(", ") + FString::SanitizeFloat(sh_pos.z));
-
-
+	FHitResult cursor;
+	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECollisionChannel::ECC_MAX, false, cursor);
 
 	// Temporary code - Refresh the waypoint as cursor
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
@@ -96,15 +82,8 @@ void AVesselSpawner::Tick( float DeltaTime ) {
 		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
 
 		sh->clearWaypoints();
-		sh->addWaypoint(500 * 100.0f * vsl::Vector(mouseLocation.X, mouseLocation.Y, 0));
+		sh->addWaypoint(vsl::Vector(cursor.Location.X, cursor.Location.Y, 0));
 	}
-
-
-
-
-
-
-
 
 	// Update all real vessels
 	vsl_sim.update(DeltaTime);
@@ -146,27 +125,3 @@ void AVesselSpawner::RudderInputRight() { ue_player.rudder_input_dir = 1; }
 void AVesselSpawner::RudderInputCancelRight() { if (ue_player.rudder_input_dir == 1) ue_player.rudder_input_dir = 0; }
 void AVesselSpawner::EngineUp() { ue_player.engine_input_dir = 1; }
 void AVesselSpawner::EngineDown() { ue_player.engine_input_dir = -1; }
-
-
-// LOGGING A VESSEL 
-/*
-GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Rudder Angle: ") + FString::SanitizeFloat(getRequestedRudderAngle()) +
-FString("  |  ") + FString::SanitizeFloat(getCurrentRudderAngle()));
-GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Red, FString("Thrust Power: ") + FString::SanitizeFloat(getRequestedThrustPower()) +
-FString("  |  ") + FString::SanitizeFloat(getCurrentThrustPower()));
-
-GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Position: ") + FString::SanitizeFloat(m_pos.x) +
-FString(", ") + FString::SanitizeFloat(m_pos.y) +
-FString(", ") + FString::SanitizeFloat(m_pos.z));
-GEngine->AddOnScreenDebugMessage(4, 5.f, FColor::Red, FString("Velocity: ") + FString::SanitizeFloat(m_vel.x) +
-FString(", ") + FString::SanitizeFloat(m_vel.y) +
-FString(", ") + FString::SanitizeFloat(m_vel.z));
-GEngine->AddOnScreenDebugMessage(5, 5.f, FColor::Red, FString("Acceleration: ") + FString::SanitizeFloat(m_accel.x) +
-FString(", ") + FString::SanitizeFloat(m_accel.y) +
-FString(", ") + FString::SanitizeFloat(m_accel.z));
-GEngine->AddOnScreenDebugMessage(6, 5.f, FColor::Red, FString("Angular Acceleration: ") + FString::SanitizeFloat(m_ang_accel.x) +
-FString(", ") + FString::SanitizeFloat(m_ang_accel.y) +
-FString(", ") + FString::SanitizeFloat(m_ang_accel.z));
-GEngine->AddOnScreenDebugMessage(7, 5.f, FColor::Red, FString("Angular Velocity: ") + FString::SanitizeFloat(m_ang_vel.x) +
-FString(", ") + FString::SanitizeFloat(m_ang_vel.y) +
-FString(", ") + FString::SanitizeFloat(m_ang_vel.z));*/

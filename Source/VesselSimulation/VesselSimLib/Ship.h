@@ -16,6 +16,7 @@ namespace vsl {
 		vsl::Vector getPosition() override;
 		vsl::Vector getRotation() override;
 
+		virtual void log() override;
 		// DYNAMICS
 		void setDynamics(IDynamics& _dynamics);
 

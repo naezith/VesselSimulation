@@ -18,6 +18,7 @@ namespace vsl {
 		
 		void setPlayer(vsl::IPlayer* _player);
 
+		virtual void log() {};
 		// IShip ID
 		int getId();
 		void setId(int _id);
