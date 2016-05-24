@@ -16,6 +16,8 @@ namespace vsl {
 
 		virtual int getRequestedThrustPower() = 0;
 		virtual int getCurrentThrustPower() = 0;
+		virtual int getMinThrustPower() = 0;
+		virtual int getMaxThrustPower() = 0;
 
 		// Rudder
 		virtual void setRudderAngle(float _degrees) = 0;

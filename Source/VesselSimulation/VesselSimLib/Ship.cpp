@@ -86,6 +86,14 @@ int vsl::Ship::getCurrentThrustPower() {
 	return m_controller->getCurrentThrustPower();
 }
 
+int vsl::Ship::getMaxThrustPower() {
+	return m_controller->getMaxThrustPower();
+}
+
+int vsl::Ship::getMinThrustPower() {
+	return m_controller->getMinThrustPower();
+}
+
 
 // Rudder
 void vsl::Ship::setRudderAngle(float _degrees) {

@@ -19,6 +19,8 @@ namespace vsl {
 
 		int getRequestedThrustPower() override;
 		int getCurrentThrustPower() override;
+		int getMinThrustPower() override;
+		int getMaxThrustPower() override;
 
 		// Rudder
 		void setRudderAngle(float _degrees) override;
