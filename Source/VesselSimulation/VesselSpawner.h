@@ -45,4 +45,8 @@ public:
 	void RudderInputCancelRight();
 	void EngineUp();
 	void EngineDown();
+
+	vsl::Vector cursor_pos;
+	void LeftClick();
+	void RightClick();
 };

@@ -72,17 +72,11 @@ void AVesselSpawner::BeginPlay() {
 void AVesselSpawner::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
 
-	// Get mouse input
-	FHitResult cursor;
-	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECollisionChannel::ECC_MAX, false, cursor);
-
-	// Temporary code - Refresh the waypoint as cursor
-	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
-		AVesselActor* act = it->second;
-		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
-
-		sh->clearWaypoints();
-		sh->addWaypoint(vsl::Vector(cursor.Location.X, cursor.Location.Y, 0));
+	// Refresh the cursor position by getting the mouse input
+	{
+		FHitResult cursor;
+		GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECollisionChannel::ECC_MAX, false, cursor);
+		cursor_pos = vsl::Vector(cursor.Location.X, cursor.Location.Y, 0);
 	}
 
 	// Update all real vessels
@@ -117,6 +111,9 @@ void AVesselSpawner::SetupPlayerInputComponent(class UInputComponent* InputCompo
 	InputComponent->BindAction("RudderInputRight", IE_Released, this, &AVesselSpawner::RudderInputCancelRight);
 	InputComponent->BindAction("RudderInputLeft", IE_Pressed, this, &AVesselSpawner::RudderInputLeft);
 	InputComponent->BindAction("RudderInputLeft", IE_Released, this, &AVesselSpawner::RudderInputCancelLeft);
+
+	InputComponent->BindAction("LeftClick", IE_Pressed, this, &AVesselSpawner::LeftClick);
+	InputComponent->BindAction("RightClick", IE_Pressed, this, &AVesselSpawner::RightClick);
 }
 
 void AVesselSpawner::RudderInputLeft() { ue_player.rudder_input_dir = -1; }
@@ -125,3 +122,16 @@ void AVesselSpawner::RudderInputRight() { ue_player.rudder_input_dir = 1; }
 void AVesselSpawner::RudderInputCancelRight() { if (ue_player.rudder_input_dir == 1) ue_player.rudder_input_dir = 0; }
 void AVesselSpawner::EngineUp() { ue_player.engine_input_dir = 1; }
 void AVesselSpawner::EngineDown() { ue_player.engine_input_dir = -1; }
+
+void AVesselSpawner::LeftClick() {
+}
+
+void AVesselSpawner::RightClick() {
+	// Add the waypoint as cursor
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+		AVesselActor* act = it->second;
+		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
+
+		sh->addWaypoint(vsl::Vector(cursor_pos.x, cursor_pos.y, 0));
+	}
+}
