@@ -33,7 +33,7 @@ public:
 	std::unordered_map<int, AVesselActor*> m_actors;
 	vsl::VesselSim vsl_sim;
 
-
+	void drawUI();
 
 	// Unreal Engine Player and Input functions
 	UEPlayer ue_player;
@@ -48,5 +48,19 @@ public:
 
 	vsl::Vector cursor_pos;
 	void LeftClick();
+	void LeftClickRelease();
+	void CTRL_LeftClick();
+	void CTRL_LeftClickRelease();
+	
+	void areaSelectVessels(vsl::Vector area_pos, vsl::Vector area_size, bool ctrl);
+
 	void RightClick();
+	void CTRL_RightClick();
+
+	const float WATER_HEIGHT = 2000.0f;
+
+	// Area select
+	bool selecting_area = false;
+	vsl::Vector rect_pos;
+	vsl::Vector rect_size;
 };

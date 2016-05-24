@@ -30,7 +30,7 @@ void AVesselSpawner::BeginPlay() {
 		vsl_sim.clearAll();
 
 		// First position and rotation
-		FVector start_pos(0, 0, 2000);
+		FVector start_pos(0, 0, WATER_HEIGHT);
 		FRotator start_rot(0, 0, 0);
 
 		// Spawn vessels
@@ -98,6 +98,8 @@ void AVesselSpawner::Tick( float DeltaTime ) {
 
 	// Engine Input is applied to all vessels controlled by UEPlayer, clear the input.
 	ue_player.engine_input_dir = 0;
+
+	drawUI();
 }
 
 // Called to bind functionality to input
@@ -113,7 +115,11 @@ void AVesselSpawner::SetupPlayerInputComponent(class UInputComponent* InputCompo
 	InputComponent->BindAction("RudderInputLeft", IE_Released, this, &AVesselSpawner::RudderInputCancelLeft);
 
 	InputComponent->BindAction("LeftClick", IE_Pressed, this, &AVesselSpawner::LeftClick);
+	InputComponent->BindAction("LeftClick", IE_Released, this, &AVesselSpawner::LeftClickRelease);
+	InputComponent->BindAction("CTRL_LeftClick", IE_Pressed, this, &AVesselSpawner::CTRL_LeftClick);
+	InputComponent->BindAction("CTRL_LeftClick", IE_Released, this, &AVesselSpawner::CTRL_LeftClickRelease);
 	InputComponent->BindAction("RightClick", IE_Pressed, this, &AVesselSpawner::RightClick);
+	InputComponent->BindAction("CTRL_RightClick", IE_Pressed, this, &AVesselSpawner::CTRL_RightClick);
 }
 
 void AVesselSpawner::RudderInputLeft() { ue_player.rudder_input_dir = -1; }
@@ -124,14 +130,161 @@ void AVesselSpawner::EngineUp() { ue_player.engine_input_dir = 1; }
 void AVesselSpawner::EngineDown() { ue_player.engine_input_dir = -1; }
 
 void AVesselSpawner::LeftClick() {
+	if (!selecting_area) {
+		selecting_area = true;
+		rect_pos = cursor_pos;
+	}
+
+	//clickSelectVessels(false);
 }
 
-void AVesselSpawner::RightClick() {
-	// Add the waypoint as cursor
+void AVesselSpawner::LeftClickRelease() {
+	if (selecting_area) {
+		areaSelectVessels(rect_pos, rect_size, false);
+	}
+}
+
+void AVesselSpawner::CTRL_LeftClick() {
+	if (!selecting_area) {
+		selecting_area = true;
+		rect_pos = cursor_pos;
+	}
+	//clickSelectVessels(true);
+}
+
+void AVesselSpawner::CTRL_LeftClickRelease() {
+	if (selecting_area) {
+		areaSelectVessels(rect_pos, rect_size, true);
+	}
+}
+
+void AVesselSpawner::areaSelectVessels(vsl::Vector area_pos, vsl::Vector area_size, bool ctrl) {
+	selecting_area = false;
+
+	// Fix the negative rectangle size values
+	if (area_size.x < 0) {
+		area_pos.x += area_size.x;
+		area_size.x *= -1;
+	}
+	if (area_size.y < 0) {
+		area_pos.y += area_size.y;
+		area_size.y *= -1;
+	}
+
+	// Loop vessels
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
 		AVesselActor* act = it->second;
 		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
+		int id = sh->getId();
+		// Get position of the ship
+		vsl::Vector pos = sh->getPosition();
+		if (area_pos.x <= pos.x && pos.x <= area_pos.x + area_size.x &&
+			area_pos.y <= pos.y && pos.y <= area_pos.y + area_size.y) { // Ship is inside the area
+			if (!vsl_sim.isVesselSelected(id)) vsl_sim.selectVessel(id);
+			else if(ctrl) vsl_sim.unselectVessel(id);
+		}
+		else { // Ship is away from the click
+			if (!ctrl) vsl_sim.unselectVessel(sh->getId());
+		}
+	}
+}
 
-		sh->addWaypoint(vsl::Vector(cursor_pos.x, cursor_pos.y, 0));
+void AVesselSpawner::RightClick() {
+	vsl_sim.addWaypointToSelected(cursor_pos, true);
+}
+
+void AVesselSpawner::CTRL_RightClick() {
+	vsl_sim.addWaypointToSelected(cursor_pos, false);
+}
+
+void AVesselSpawner::drawUI() {
+	// Log cursor
+	//GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Cursor: ") + FString::SanitizeFloat(cursor_pos.x) +
+	//																FString(", ") + FString::SanitizeFloat(cursor_pos.y));
+
+	// Loop vessels
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+		AVesselActor* act = it->second;
+		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
+		int id = sh->getId();
+
+		// Draw sphere if it's selected
+		if(vsl_sim.isVesselSelected(id)){
+			vsl::Vector pos = sh->getPosition();
+			DrawDebugSphere(
+				GetWorld(),
+				FVector(pos.x, pos.y, WATER_HEIGHT),
+				4000,
+				10,
+				FColor::Magenta
+			);
+
+			auto& wp_list = sh->getWaypoints();
+
+			// Ship to First WP
+			if(!wp_list.empty()){
+				vsl::Vector ship_pos = sh->getPosition();
+				vsl::Vector wp_pos = wp_list[0];
+				DrawDebugLine(
+					GetWorld(),
+					FVector(ship_pos.x, ship_pos.y, WATER_HEIGHT),
+					FVector(wp_pos.x, wp_pos.y, WATER_HEIGHT),
+					FColor(0, 150, 0),
+					false, -1, 0,
+					1000
+				);
+			}
+
+			// Other WPs
+			for (int i = 0; i < wp_list.size(); ++i) {
+				vsl::Vector pos = wp_list[i];
+
+				// Draw WP
+				DrawDebugSphere(
+					GetWorld(),
+					FVector(pos.x, pos.y, WATER_HEIGHT),
+					4000,
+					10,
+					FColor::Green
+				);
+
+				// Draw line between WPs
+				if(i < wp_list.size() - 1){
+					vsl::Vector next_pos = wp_list[i + 1];
+					DrawDebugLine(
+						GetWorld(),
+						FVector(pos.x, pos.y, WATER_HEIGHT),
+						FVector(next_pos.x, next_pos.y, WATER_HEIGHT),
+						FColor(0, 150, 0),
+						false, -1, 0,
+						1000
+					);
+				}
+			}
+		}
+	}
+
+	// Update the selection rectangle
+	if (selecting_area) {
+		rect_size = cursor_pos - rect_pos;
+
+		// Draw the selection rectangle
+		std::vector<FVector> line_points;
+		line_points.push_back(FVector(rect_pos.x, rect_pos.y, WATER_HEIGHT));
+		line_points.push_back(FVector(rect_pos.x + rect_size.x, rect_pos.y, WATER_HEIGHT));
+		line_points.push_back(FVector(rect_pos.x + rect_size.x, rect_pos.y + rect_size.y, WATER_HEIGHT));
+		line_points.push_back(FVector(rect_pos.x, rect_pos.y + rect_size.y, WATER_HEIGHT));
+		line_points.push_back(line_points[0]);
+
+		for (int i = 0; i < line_points.size() - 1; ++i) {
+			DrawDebugLine(
+				GetWorld(),
+				line_points[i],
+				line_points[i + 1],
+				FColor(255, 0, 0),
+				false, -1, 0,
+				3000
+			);
+		}
 	}
 }

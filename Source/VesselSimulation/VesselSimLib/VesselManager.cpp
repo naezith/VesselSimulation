@@ -57,3 +57,24 @@ void vsl::VesselManager::clearAll() {
 vsl::VesselManager::~VesselManager() {
 	clearAll();
 }
+
+void vsl::VesselManager::selectVessel(int id) {
+	selected_vsl_ids.insert(id);
+}
+
+void vsl::VesselManager::unselectVessel(int id) {
+	selected_vsl_ids.erase(id);
+}
+
+bool vsl::VesselManager::isVesselSelected(int id) {
+	return selected_vsl_ids.find(id) != selected_vsl_ids.end();
+}
+
+void vsl::VesselManager::addWaypointToSelected(vsl::Vector pos, bool forced) {
+	for (auto it = selected_vsl_ids.begin(); it != selected_vsl_ids.end(); ++it) {
+		vsl::IShip* sh = getVessel(*it);
+
+		if (forced) sh->clearWaypoints();
+		sh->addWaypoint(pos);
+	}
+}
