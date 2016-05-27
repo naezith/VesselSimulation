@@ -5,7 +5,7 @@
 
 // Sets default values
 AVesselSpawner::AVesselSpawner() {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Set this pawn to be controlled by the lowest-numbered player
@@ -42,7 +42,7 @@ void AVesselSpawner::BeginPlay() {
 			vsl::IShip* new_vessel = vsl_sim.requestNewVessel("Basic Ship");
 
 			// If delivered,
-			if(new_vessel){
+			if (new_vessel) {
 				int id = new_vessel->getId();
 				// Create an actor for the real vessel
 				AVesselActor* new_actor = World->SpawnActor<AVesselActor>(start_pos, start_rot, SpawnParams);
@@ -50,13 +50,13 @@ void AVesselSpawner::BeginPlay() {
 					new_actor->setId(id); // Match real vessel and actor Id's
 					m_actors[id] = new_actor; // Map the id : actor
 
-					// Initialize the real vessel
+											  // Initialize the real vessel
 					FRotator rot = new_actor->GetActorRotation();
 					FVector loc = new_actor->GetActorLocation();
 					new_vessel->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
-					
+
 					// Set the player
-					if(i < 3) new_vessel->setPlayer(&ai_player);
+					if (i < 3) new_vessel->setPlayer(&ai_player);
 					else new_vessel->setPlayer(&ue_player);
 
 					// Change position and rotation for new ships
@@ -69,8 +69,8 @@ void AVesselSpawner::BeginPlay() {
 }
 
 // Called every frame
-void AVesselSpawner::Tick( float DeltaTime ) {
-	Super::Tick( DeltaTime );
+void AVesselSpawner::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
 
 	// Refresh the cursor position by getting the mouse input
 	{
@@ -134,8 +134,6 @@ void AVesselSpawner::LeftClick() {
 		selecting_area = true;
 		rect_pos = cursor_pos;
 	}
-
-	//clickSelectVessels(false);
 }
 
 void AVesselSpawner::LeftClickRelease() {
@@ -149,7 +147,6 @@ void AVesselSpawner::CTRL_LeftClick() {
 		selecting_area = true;
 		rect_pos = cursor_pos;
 	}
-	//clickSelectVessels(true);
 }
 
 void AVesselSpawner::CTRL_LeftClickRelease() {
@@ -171,6 +168,17 @@ void AVesselSpawner::areaSelectVessels(vsl::Vector area_pos, vsl::Vector area_si
 		area_size.y *= -1;
 	}
 
+	// Set a minimum area for single clicks
+	float min_area_size = 10000.0f;
+	if (area_size.x < min_area_size) {
+		area_size.x = min_area_size;
+		area_pos.x -= min_area_size * 0.5f;
+	}
+	if (area_size.y < min_area_size) {
+		area_size.y = min_area_size;
+		area_pos.y -= min_area_size * 0.5f;
+	}
+
 	// Loop vessels
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
 		AVesselActor* act = it->second;
@@ -181,7 +189,7 @@ void AVesselSpawner::areaSelectVessels(vsl::Vector area_pos, vsl::Vector area_si
 		if (area_pos.x <= pos.x && pos.x <= area_pos.x + area_size.x &&
 			area_pos.y <= pos.y && pos.y <= area_pos.y + area_size.y) { // Ship is inside the area
 			if (!vsl_sim.isVesselSelected(id)) vsl_sim.selectVessel(id);
-			else if(ctrl) vsl_sim.unselectVessel(id);
+			else if (ctrl) vsl_sim.unselectVessel(id);
 		}
 		else { // Ship is away from the click
 			if (!ctrl) vsl_sim.unselectVessel(sh->getId());
@@ -209,7 +217,7 @@ void AVesselSpawner::drawUI() {
 		int id = sh->getId();
 
 		// Draw sphere if it's selected
-		if(vsl_sim.isVesselSelected(id)){
+		if (vsl_sim.isVesselSelected(id)) {
 			vsl::Vector pos = sh->getPosition();
 			DrawDebugSphere(
 				GetWorld(),
@@ -222,7 +230,7 @@ void AVesselSpawner::drawUI() {
 			auto& wp_list = sh->getWaypoints();
 
 			// Ship to First WP
-			if(!wp_list.empty()){
+			if (!wp_list.empty()) {
 				vsl::Vector ship_pos = sh->getPosition();
 				vsl::Vector wp_pos = wp_list[0];
 				DrawDebugLine(
@@ -249,7 +257,7 @@ void AVesselSpawner::drawUI() {
 				);
 
 				// Draw line between WPs
-				if(i < wp_list.size() - 1){
+				if (i < wp_list.size() - 1) {
 					vsl::Vector next_pos = wp_list[i + 1];
 					DrawDebugLine(
 						GetWorld(),
