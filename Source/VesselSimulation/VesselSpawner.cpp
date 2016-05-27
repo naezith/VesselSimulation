@@ -9,14 +9,27 @@ const int SHIP_COUNT = 4;
 AVesselSpawner::AVesselSpawner() {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	// Set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	// Static Top Down Camera
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	OurCameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
+	OurCameraSpringArm->AttachTo(RootComponent);
+	OurCameraSpringArm->TargetArmLength = 0;
+	OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
+	OurCamera->AttachTo(OurCameraSpringArm, USpringArmComponent::SocketName);
 }
 
 // Called when the game starts or when spawned
 void AVesselSpawner::BeginPlay() {
 	Super::BeginPlay();
+
+	// This spawner is also the main top-down camera
+	SetActorRotation(FRotator(-30.0f, 0.0f, 0.0f));
+	SetActorLocation(FVector(0.0f, 0.0f, 600000.0f));
+	curr_camera = SHIP_COUNT; // ID of the main camera
 
 	UWorld* const World = GetWorld();
 	if (World) {
@@ -60,12 +73,11 @@ void AVesselSpawner::BeginPlay() {
 					// Set the player
 					if (i < SHIP_COUNT - 1) new_vessel->setPlayer(&ai_player);
 					else {
-						curr_player = i;
+						player_vessel_id = id;
 						new_vessel->setPlayer(&ue_player);
-						World->GetFirstPlayerController()->SetViewTarget(new_actor);
 					}
 					// Change position and rotation for new ships
-					start_pos.Y += 10000.0f;
+					start_pos.Y += 60000.0f;
 					start_rot.Yaw += 15.0f;
 				}
 			}
@@ -77,11 +89,25 @@ void AVesselSpawner::BeginPlay() {
 void AVesselSpawner::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	handleCamera(DeltaTime);
+
 	// Refresh the cursor position by getting the mouse input
 	{
 		FHitResult cursor;
 		GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECollisionChannel::ECC_MAX, false, cursor);
 		cursor_pos = vsl::Vector(cursor.Location.X, cursor.Location.Y, 0);
+	}
+
+	// All vessels follow the player
+	if(ai_ships_follows_player){
+		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+			AVesselActor* act = it->second;
+			vsl::IShip* sh = vsl_sim.getVessel(act->getId());
+			if(sh->getId() != player_vessel_id){
+				sh->clearWaypoints();
+				sh->addWaypoint(vsl_sim.getVessel(player_vessel_id)->getPosition());
+			}
+		}
 	}
 
 	// Update all real vessels
@@ -126,6 +152,10 @@ void AVesselSpawner::SetupPlayerInputComponent(class UInputComponent* InputCompo
 	InputComponent->BindAction("RightClick", IE_Pressed, this, &AVesselSpawner::RightClick);
 	InputComponent->BindAction("CTRL_RightClick", IE_Pressed, this, &AVesselSpawner::CTRL_RightClick);
 
+// CAMERA
+	InputComponent->BindAction("ChangeCamera", IE_Pressed, this, &AVesselSpawner::ChangeCamera);
+	InputComponent->BindAxis("MoveForward", this, &AVesselSpawner::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &AVesselSpawner::MoveRight);
 	InputComponent->BindAction("FollowPlayer", IE_Pressed, this, &AVesselSpawner::ToggleFollowPlayer);
 }
 
@@ -137,14 +167,23 @@ void AVesselSpawner::EngineUp() { ue_player.engine_input_dir = 1; }
 void AVesselSpawner::EngineDown() { ue_player.engine_input_dir = -1; }
 
 void AVesselSpawner::ToggleFollowPlayer() {
-	if (++curr_player == SHIP_COUNT) curr_player = 0;
+	ai_ships_follows_player = !ai_ships_follows_player;
+}
 
-	int i = -1;
-	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
-		if(++i == curr_player){
-			AVesselActor* act = it->second;
-			GetWorld()->GetFirstPlayerController()->SetViewTarget(act);
-			break;
+void AVesselSpawner::ChangeCamera() {
+	if (++curr_camera > SHIP_COUNT) curr_camera = 0;
+
+	if (curr_camera == SHIP_COUNT) {
+		GetWorld()->GetFirstPlayerController()->SetViewTarget(this);
+	}
+	else{
+		int i = -1;
+		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+			if(++i == curr_camera){
+				AVesselActor* act = it->second;
+				GetWorld()->GetFirstPlayerController()->SetViewTarget(act);
+				break;
+			}
 		}
 	}
 }
@@ -313,6 +352,30 @@ void AVesselSpawner::drawUI() {
 				false, -1, 0,
 				3000
 			);
+		}
+	}
+}
+
+//Input functions
+void AVesselSpawner::MoveForward(float AxisValue) {
+	MovementInput.X = FMath::Clamp<float>(AxisValue, -1.0f, 1.0f);
+}
+
+void AVesselSpawner::MoveRight(float AxisValue) {
+	MovementInput.Y = FMath::Clamp<float>(AxisValue, -1.0f, 1.0f);
+}
+
+void AVesselSpawner::handleCamera(float DeltaTime) {
+	//Handle movement based on our "MoveX" and "MoveY" axes
+	{
+		if (!MovementInput.IsZero())
+		{
+			//Scale our movement input axis values by 100 units per second
+			MovementInput = MovementInput.SafeNormal() * 100000.0f;
+			FVector NewLocation = GetActorLocation();
+			NewLocation += GetActorForwardVector() * MovementInput.X * DeltaTime;
+			NewLocation += GetActorRightVector() * MovementInput.Y * DeltaTime;
+			SetActorLocation(NewLocation);
 		}
 	}
 }

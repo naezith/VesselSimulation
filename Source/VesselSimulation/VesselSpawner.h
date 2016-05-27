@@ -62,7 +62,19 @@ public:
 	vsl::Vector rect_pos;
 	vsl::Vector rect_size;
 
-	// Camera
+	int player_vessel_id;
+	bool ai_ships_follows_player = false;
 	void ToggleFollowPlayer();
-	int curr_player;
+
+	// Camera
+	void ChangeCamera();
+	int curr_camera;
+    USpringArmComponent* OurCameraSpringArm;
+    UCameraComponent* OurCamera;
+
+	FVector2D MovementInput;
+
+	void handleCamera(float DeltaTime);
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
 };
