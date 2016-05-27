@@ -21,6 +21,9 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
+	USpringArmComponent* CameraBoom;
+	UCameraComponent* TopDownCameraComponent;
+
 	int getId();
 	void setId(int _id);
 

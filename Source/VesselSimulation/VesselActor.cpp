@@ -26,6 +26,22 @@ AVesselActor::AVesselActor() {
 		VesselModel->SetRelativeRotation(FRotator(0.0f, 0.0f, 90.0f));
 		VesselModel->SetWorldScale3D(FVector(600.0f));
 	}
+
+	// Camera
+	CameraBoom = NewObject<USpringArmComponent>(this, TEXT("CameraBoom"));
+	CameraBoom->TargetArmLength = 100000;
+	CameraBoom->RelativeRotation = FRotator(-45.f, 0.f, 0.f);
+	CameraBoom->bDoCollisionTest = false;
+	CameraBoom->bInheritYaw = true;
+	CameraBoom->bInheritRoll = false;
+	CameraBoom->bInheritPitch = false;
+	CameraBoom->AttachTo(this->GetRootComponent());
+	CameraBoom->Activate();
+
+	TopDownCameraComponent = NewObject<UCameraComponent>(this, TEXT("TopDownCamera"));
+	TopDownCameraComponent->bUseControllerViewRotation = false;
+	TopDownCameraComponent->AttachTo(CameraBoom, USpringArmComponent::SocketName);
+	TopDownCameraComponent->Activate();
 }
 
 // Called when the game starts or when spawned

@@ -3,6 +3,8 @@
 #include "VesselSimulation.h"
 #include "VesselSpawner.h"
 
+const int SHIP_COUNT = 4;
+
 // Sets default values
 AVesselSpawner::AVesselSpawner() {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -37,7 +39,7 @@ void AVesselSpawner::BeginPlay() {
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = Instigator;
-		for (auto i = 0; i < 4; ++i) {
+		for (auto i = 0; i < SHIP_COUNT; ++i) {
 			// Request a new real vessel
 			vsl::IShip* new_vessel = vsl_sim.requestNewVessel("Basic Ship");
 
@@ -50,15 +52,18 @@ void AVesselSpawner::BeginPlay() {
 					new_actor->setId(id); // Match real vessel and actor Id's
 					m_actors[id] = new_actor; // Map the id : actor
 
-											  // Initialize the real vessel
+					// Initialize the real vessel
 					FRotator rot = new_actor->GetActorRotation();
 					FVector loc = new_actor->GetActorLocation();
 					new_vessel->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
 
 					// Set the player
-					if (i < 3) new_vessel->setPlayer(&ai_player);
-					else new_vessel->setPlayer(&ue_player);
-
+					if (i < SHIP_COUNT - 1) new_vessel->setPlayer(&ai_player);
+					else {
+						curr_player = i;
+						new_vessel->setPlayer(&ue_player);
+						World->GetFirstPlayerController()->SetViewTarget(new_actor);
+					}
 					// Change position and rotation for new ships
 					start_pos.Y += 10000.0f;
 					start_rot.Yaw += 15.0f;
@@ -120,6 +125,8 @@ void AVesselSpawner::SetupPlayerInputComponent(class UInputComponent* InputCompo
 	InputComponent->BindAction("CTRL_LeftClick", IE_Released, this, &AVesselSpawner::CTRL_LeftClickRelease);
 	InputComponent->BindAction("RightClick", IE_Pressed, this, &AVesselSpawner::RightClick);
 	InputComponent->BindAction("CTRL_RightClick", IE_Pressed, this, &AVesselSpawner::CTRL_RightClick);
+
+	InputComponent->BindAction("FollowPlayer", IE_Pressed, this, &AVesselSpawner::ToggleFollowPlayer);
 }
 
 void AVesselSpawner::RudderInputLeft() { ue_player.rudder_input_dir = -1; }
@@ -128,6 +135,19 @@ void AVesselSpawner::RudderInputRight() { ue_player.rudder_input_dir = 1; }
 void AVesselSpawner::RudderInputCancelRight() { if (ue_player.rudder_input_dir == 1) ue_player.rudder_input_dir = 0; }
 void AVesselSpawner::EngineUp() { ue_player.engine_input_dir = 1; }
 void AVesselSpawner::EngineDown() { ue_player.engine_input_dir = -1; }
+
+void AVesselSpawner::ToggleFollowPlayer() {
+	if (++curr_player == SHIP_COUNT) curr_player = 0;
+
+	int i = -1;
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
+		if(++i == curr_player){
+			AVesselActor* act = it->second;
+			GetWorld()->GetFirstPlayerController()->SetViewTarget(act);
+			break;
+		}
+	}
+}
 
 void AVesselSpawner::LeftClick() {
 	if (!selecting_area) {

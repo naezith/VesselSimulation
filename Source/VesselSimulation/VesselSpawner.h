@@ -27,8 +27,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-
-
 	// Vessel Simulation
 	std::unordered_map<int, AVesselActor*> m_actors;
 	vsl::VesselSim vsl_sim;
@@ -57,10 +55,14 @@ public:
 	void RightClick();
 	void CTRL_RightClick();
 
-	const float WATER_HEIGHT = 2000.0f;
+	const float WATER_HEIGHT = 2300.0f;
 
 	// Area select
 	bool selecting_area = false;
 	vsl::Vector rect_pos;
 	vsl::Vector rect_size;
+
+	// Camera
+	void ToggleFollowPlayer();
+	int curr_player;
 };
