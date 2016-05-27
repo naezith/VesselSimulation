@@ -168,7 +168,7 @@ void AVesselSpawner::areaSelectVessels(vsl::Vector area_pos, vsl::Vector area_si
 		area_size.y *= -1;
 	}
 
-	// Set a minimum area for single clicks
+	// Set a minimum area to be able to handle single clicks
 	float min_area_size = 10000.0f;
 	if (area_size.x < min_area_size) {
 		area_size.x = min_area_size;
@@ -216,15 +216,15 @@ void AVesselSpawner::drawUI() {
 		vsl::IShip* sh = vsl_sim.getVessel(act->getId());
 		int id = sh->getId();
 
-		// Draw sphere if it's selected
-		if (vsl_sim.isVesselSelected(id)) {
+		// Draw sphere if it's selected or it's the player controlled ship
+		if (vsl_sim.isVesselSelected(id) || !sh->isFollowingWaypoints()) {
 			vsl::Vector pos = sh->getPosition();
 			DrawDebugSphere(
 				GetWorld(),
 				FVector(pos.x, pos.y, WATER_HEIGHT),
 				4000,
 				10,
-				FColor::Magenta
+				sh->isFollowingWaypoints() ? FColor::Magenta : FColor::Green
 			);
 
 			auto& wp_list = sh->getWaypoints();

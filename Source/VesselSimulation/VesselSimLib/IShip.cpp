@@ -30,3 +30,6 @@ const std::vector<vsl::Vector>& vsl::IShip::getWaypoints() {
 	return m_waypoints;
 }
 
+bool vsl::IShip::isFollowingWaypoints() {
+	return m_player->isFollowingWaypoints();
+}

@@ -19,3 +19,7 @@ void UEPlayer::control(vsl::IShip* _ship, float dt) {
 	if (engine_input_dir != 0) 
 		_ship->setEngineOrder(_ship->getEngineOrder() + engine_input_dir);
 }
+
+bool UEPlayer::isFollowingWaypoints() {
+	return false;
+}

@@ -29,6 +29,7 @@ namespace vsl {
 		const std::vector<vsl::Vector>& getWaypoints();
 		void clearWaypoints();
 
+		bool isFollowingWaypoints();
 	protected:
 		vsl::IPlayer* m_player;
 

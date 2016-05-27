@@ -74,7 +74,9 @@ void vsl::VesselManager::addWaypointToSelected(vsl::Vector pos, bool forced) {
 	for (auto it = selected_vsl_ids.begin(); it != selected_vsl_ids.end(); ++it) {
 		vsl::IShip* sh = getVessel(*it);
 
-		if (forced) sh->clearWaypoints();
-		sh->addWaypoint(pos);
+		if(sh->isFollowingWaypoints()){
+			if (forced) sh->clearWaypoints();
+			sh->addWaypoint(pos);
+		}
 	}
 }
