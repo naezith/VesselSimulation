@@ -62,6 +62,7 @@ public:
 	vsl::Vector rect_pos;
 	vsl::Vector rect_size;
 
+	int ship_to_log;
 	int player_vessel_id;
 	bool ai_ships_follows_player = false;
 	void ToggleFollowPlayer();

@@ -17,7 +17,7 @@ void vsl::LowFidelityDynamics::step(vsl::DynamicData& _dyn, float _dt) {
 
 // ANGULAR
 	// Angular Acceleration
-	ang_accel.x = 0.0f* -ang_vel.z * vel.x * 0.0001f // Yaw affects roll
+	ang_accel.x = -ang_vel.z * vel.x * 0.00001f // Yaw affects roll
 				- vsl::Math::sign(rot.x)* rot.x * rot.x * 0.2f; // Ship wants it's roll to be 0, drag
 	ang_accel.y = +vel.x * 0.00025f // Surge affects pitch, lifts the front
 				- vsl::Math::sign(rot.y)* rot.y * rot.y * 1.0f; // Ship wants it's pitch to be 0, drag
@@ -36,8 +36,8 @@ void vsl::LowFidelityDynamics::step(vsl::DynamicData& _dyn, float _dt) {
 	accel.x = 2500.0f*_dyn.thrustPower.get() // Engine causes surge
 			- vsl::Math::sign(vel.x) * vel.x * vel.x * 0.0001f;
 	accel.y = -ang_vel.z*20.0f // Rudder causes drift
-			- ang_vel.x*20.0f // Roll causes drift
-			- vsl::Math::sign(vel.y) * vel.y * vel.y * 1.0f;
+		- ang_vel.x*20.0f // Roll causes drift
+		- vsl::Math::sign(vel.y) * vel.y * vel.y * 0.000025f;
 	accel.z = 0;
 
 	vel += accel * _dt;

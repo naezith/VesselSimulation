@@ -13,8 +13,8 @@ vsl::DynamicData::DynamicData(vsl::Vector _pos, vsl::Vector _rot) {
 void vsl::DynamicData::init(vsl::Vector _pos, vsl::Vector _rot) {
 	MAX_RUDDER_ANGLE = 35.0f;
 
-	thrustPower.init(0.0f, 50.0f);
-	rudderAngle.init(0.0f, MAX_RUDDER_ANGLE*4);
+	thrustPower.init(0.0f, 20.0f);
+	rudderAngle.init(0.0f, MAX_RUDDER_ANGLE*0.5f);
 
 	m_pos = _pos;
 	m_rot = _rot;

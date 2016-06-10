@@ -3,7 +3,7 @@
 #include "VesselSimulation.h"
 #include "VesselSpawner.h"
 
-const int SHIP_COUNT = 4;
+const int SHIP_COUNT = 9;
 
 // Sets default values
 AVesselSpawner::AVesselSpawner() {
@@ -27,7 +27,7 @@ void AVesselSpawner::BeginPlay() {
 	Super::BeginPlay();
 
 	// This spawner is also the main top-down camera
-	SetActorRotation(FRotator(-30.0f, 0.0f, 0.0f));
+	SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	SetActorLocation(FVector(0.0f, 0.0f, 600000.0f));
 	curr_camera = SHIP_COUNT; // ID of the main camera
 
@@ -45,7 +45,8 @@ void AVesselSpawner::BeginPlay() {
 		vsl_sim.clearAll();
 
 		// First position and rotation
-		FVector start_pos(0, 0, WATER_HEIGHT);
+		float ship_dist = 60000.0f;
+		FVector start_pos(0, -0.5f*(SHIP_COUNT - 1)*ship_dist, WATER_HEIGHT);
 		FRotator start_rot(0, 0, 0);
 
 		// Spawn vessels
@@ -71,14 +72,17 @@ void AVesselSpawner::BeginPlay() {
 					new_vessel->init(vsl::Vector(loc.X, loc.Y, loc.Z), vsl::Vector(rot.Roll, rot.Pitch, rot.Yaw));
 
 					// Set the player
-					if (i < SHIP_COUNT - 1) new_vessel->setPlayer(&ai_player);
-					else {
-						player_vessel_id = id;
+					if (i == (int)SHIP_COUNT/2) {
+						ship_to_log = player_vessel_id = id;
 						new_vessel->setPlayer(&ue_player);
 					}
+					else {
+						new_vessel->setPlayer(&ai_player);
+					}
+
 					// Change position and rotation for new ships
-					start_pos.Y += 60000.0f;
-					start_rot.Yaw += 15.0f;
+					start_pos.Y += ship_dist;
+					//start_rot.Yaw += 15.0f;
 				}
 			}
 		}
@@ -174,6 +178,7 @@ void AVesselSpawner::ChangeCamera() {
 	if (++curr_camera > SHIP_COUNT) curr_camera = 0;
 
 	if (curr_camera == SHIP_COUNT) {
+		ship_to_log = player_vessel_id;
 		GetWorld()->GetFirstPlayerController()->SetViewTarget(this);
 	}
 	else{
@@ -181,6 +186,7 @@ void AVesselSpawner::ChangeCamera() {
 		for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
 			if(++i == curr_camera){
 				AVesselActor* act = it->second;
+				ship_to_log = act->getId();
 				GetWorld()->GetFirstPlayerController()->SetViewTarget(act);
 				break;
 			}
@@ -268,6 +274,19 @@ void AVesselSpawner::drawUI() {
 	// Log cursor
 	//GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Yellow, FString("Cursor: ") + FString::SanitizeFloat(cursor_pos.x) +
 	//																FString(", ") + FString::SanitizeFloat(cursor_pos.y));
+
+	// Log binds
+	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::White, FString("Rotate Rudder <-> Left-Right Arrows"));
+	GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::White, FString("Set Engine Order <-> Up-Down Arrows"));
+	GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::White, FString("Toggle Follow Player <-> F"));
+	GEngine->AddOnScreenDebugMessage(4, 5.f, FColor::White, FString("Change Camera <-> C"));
+	GEngine->AddOnScreenDebugMessage(5, 5.f, FColor::White, FString("Single/Area Select Vessels <-> Left Click"));
+	GEngine->AddOnScreenDebugMessage(6, 5.f, FColor::White, FString("Move Command <-> Right Click"));
+	GEngine->AddOnScreenDebugMessage(7, 5.f, FColor::White, FString("Add waypoint <-> CTRL + Right Click"));
+
+	// Log vessel
+	vsl_sim.getVessel(ship_to_log)->log();
+
 
 	// Loop vessels
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it) {
